@@ -1,0 +1,77 @@
+<?php
+; ----------------------------------------------------------
+;
+; System Global Settings
+;
+; ----------------------------------------------------------
+[global]
+; The system administrator's E-mail.
+mail_address = "webmaster@example.com"
+
+; Domain Name.
+; It isn't contain the subdomain.
+domain_name = "www.example.com"
+
+; Secure Domain Name.
+;secure_domain = "ssl.example.com"
+
+; System installation URL
+; It isn't contain the system path.
+base_url = "http://www.example/systemdir/"
+
+; Document root.
+doc_root = "/path/to/document/root"
+
+; System installation path.
+base_dir = "/path/to/document/root/systemdir"
+
+; System installation path.
+mirror_dir = "/path/to/document/root/systemdir/data/mirror"
+
+; temporary files save path.
+tmp_dir = "/path/to/document/root/systemdir/data/tmp"
+
+; log files save path.
+log_dir = "/path/to/document/root/systemdir/data/logs"
+
+; cache files save path for template engine.
+cache_dir = "/path/to/document/root/systemdir/data/cache"
+
+; system installation path.
+system_path = "/systemdir/interface.php"
+
+; Static files installation path.
+assets_path = "/systemdir/"
+
+; System Language
+system_lang = "ja"
+
+; ----------------------------------------------------------
+;
+; Database Configuration
+;
+; ----------------------------------------------------------
+[database]
+; Database Driver
+db_driver = "mysql"
+
+; Database Server
+db_host = "localhost"
+
+; Database Server Port
+db_port = 3306
+
+; Database name
+db_source = "dbname"
+
+; Database user
+db_user = "username"
+
+; Database password
+db_password = "password"
+
+; Database charset
+db_encoding = "utf8"
+
+; Table prefix
+db_table_prefix = "gsh_"

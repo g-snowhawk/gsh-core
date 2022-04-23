@@ -1,0 +1,72 @@
+
+-- --------------------------------------------------------
+
+DROP TABLE IF EXISTS `table::user`;
+CREATE TABLE `table::user` (
+  `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+  `alias` int(11) DEFAULT NULL,
+  `uname` varchar(32) NOT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `admin` int(11) DEFAULT '0',
+  `upass` text,
+  `pw_type` text,
+  `pw_expire` datetime DEFAULT NULL,
+  `company` varchar(255) DEFAULT NULL,
+  `division` varchar(255) DEFAULT NULL,
+  `fullname` varchar(255) DEFAULT NULL,
+  `fullname_rubi` varchar(255) DEFAULT NULL,
+  `url` varchar(255) DEFAULT NULL,
+  `zip` varchar(8) DEFAULT NULL,
+  `state` varchar(50) DEFAULT NULL,
+  `city` varchar(50) DEFAULT NULL,
+  `town` varchar(255) DEFAULT NULL,
+  `address1` varchar(255) DEFAULT NULL,
+  `address2` varchar(255) DEFAULT NULL,
+  `tel` varchar(13) DEFAULT NULL,
+  `fax` varchar(13) DEFAULT NULL,
+  `contract` date DEFAULT NULL,
+  `expire` int(11) DEFAULT NULL,
+  `closing` int(11) DEFAULT NULL,
+  `pay` int(11) DEFAULT NULL,
+  `forward` int(11) DEFAULT NULL,
+  `type` char(1) DEFAULT NULL,
+  `restriction` varchar(32) DEFAULT NULL,
+  `free1` text,
+  `free2` text,
+  `free3` text,
+  `create_date` datetime NOT NULL,
+  `modify_date` datetime DEFAULT NULL,
+  `lft` double DEFAULT '0',
+  `rgt` double DEFAULT '0',
+  UNIQUE (`uname`),
+  UNIQUE (`email`,`admin`),
+  CHECK (pw_type = 'irreversible' OR pw_type = 'reversible' OR pw_type = 'temporary')
+);
+
+-- --------------------------------------------------------
+
+DROP TABLE IF EXISTS `table::user_preference`;
+CREATE TABLE `table::user_preference` (
+  `userkey` int(11) NOT NULL DEFAULT '0',
+  `section` varchar(32) NOT NULL DEFAULT '',
+  `config` varchar(32) NOT NULL DEFAULT '',
+  `value` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`userkey`,`section`,`config`),
+  FOREIGN KEY (`userkey`) REFERENCES `table::user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- --------------------------------------------------------
+
+DROP TABLE IF EXISTS `table::permission`;
+CREATE TABLE `table::permission` (
+  `userkey` int(11) NOT NULL,
+  `filter1` int(11) NOT NULL DEFAULT '0',
+  `filter2` int(11) NOT NULL DEFAULT '0',
+  `application` varchar(32) NOT NULL DEFAULT '',
+  `class` varchar(255) NOT NULL DEFAULT '',
+  `type` varchar(255) NOT NULL DEFAULT '',
+  `priv` text NOT NULL DEFAULT '0',
+  PRIMARY KEY (`userkey`,`filter1`,`filter2`,`application`,`class`,`type`),
+  FOREIGN KEY (`userkey`) REFERENCES `table::user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CHECK (priv = '0' OR priv = '1')
+);

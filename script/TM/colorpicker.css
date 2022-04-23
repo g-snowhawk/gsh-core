@@ -1,0 +1,109 @@
+.color-picker-panel {
+  background: #efefef;
+  border: 1px solid #ccc;
+  cursor: default;
+  /*height: 230px;*/
+  position: absolute;
+  width: 275px;
+  z-index: 800;
+}
+.base-color {
+  background: #ff0000;
+  height: 200px;
+  left: 15px;
+  position: absolute;
+  top: 15px;
+  width: 200px;
+}
+.brightness {
+  background-image: linear-gradient(rgba(0, 0, 0, 0), rgb(0, 0, 0)), linear-gradient(to right, rgb(255, 255, 255), rgba(255, 255, 255, 0));
+  cursor: crosshair;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+.pointer {
+  height: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 0;
+}
+.pointer:after {
+  background: #fff;
+  border: 1px solid #000;
+  border-radius: 5px;
+  box-sizing: border-box;
+  content: '';
+  display: block;
+  font-size: 0;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  width: 10px;
+}
+.base-color-selector {
+  background-image: linear-gradient(to bottom, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);
+  height: 200px;
+  left: 230px;
+  position: absolute;
+  top: 15px;
+  width: 30px;
+}
+.selector-slider {
+  border: 1px solid transparent;
+  border-right-color: #000;
+  border-width: 4px 6px;
+  cursor: pointer;
+  height: 0;
+  left: 230px;
+  margin: -4px 0 0 -6px;
+  position: absolute;
+  top: 15px;
+  width: 30px;
+}
+
+.input-color {
+  background: #efefef;
+  border: 1px solid #999;
+  border-radius: 4px;
+  display: inline-block;
+  font-size: .6rem;
+  padding: 3px 20px 3px 8px;
+  position: relative;
+}
+.input-color .selected {
+  display: inline-block;
+  height: 16px;
+  line-height: 1;
+  vertical-align: top;
+  width: 24px;
+}
+.input-color .selected:after {
+  border: 6px solid transparent;
+  border-top-color: #666;
+  border-width: 8px 5px;
+  content: '';
+  height: 0;
+  left: 36px;
+  margin: -4px 0 0 0;
+  position: absolute;
+  top: 50%;
+}
+
+.color-picker-panel .controls {
+  margin-top: 220px;
+  padding: 0 15px 5px;
+  text-align: right;
+}
+.color-picker-panel .controls button {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  color: #666;
+  cursor: pointer;
+  font-size: .75rem;
+  line-height: 1;
+  margin: 0 0 0 4px;
+  min-width: 80px;
+  padding: .5em;
+}

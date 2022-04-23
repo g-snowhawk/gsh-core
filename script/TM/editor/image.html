@@ -1,0 +1,17 @@
+<form id="image-viewer" method="post" enctype="multipart/form-data">
+  <input type="hidden" name="stub">
+  <div class="scroller" id="thumbnails">
+    <div class="image-set" id="image-addnew">
+      <label>
+        <span class="thumbnail"></span>
+        <input type="file" name="file[]" accept="image/*">
+      </label>
+    </div>
+  </div>
+  <div class="footer">
+    <input type="button" name="editor-insert" value="挿入" data-type="image" data-messages="{&quot;noselect&quot;:&quot;&quot;}">
+    <input type="button" name="editor-cancel" value="キャンセル">
+    <a data-mode="select" data-complete="完了">選択</a>
+    <a data-mode="remove" data-complete="完了">編集</a>
+  </div>
+</form>

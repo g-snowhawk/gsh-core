@@ -1,0 +1,1 @@
+<?php include_once __DIR__.'/constants.php'; if(defined('INCLUDE_PATH')){ini_set('include_path',implode(PATH_SEPARATOR,INCLUDE_PATH).PATH_SEPARATOR.ini_get('include_path'));}if(defined('AUTOLOADER')){require_once AUTOLOADER;}$inst=new Gsnowhawk\Core\App(ERROR_DOCUMENT);$inst->run();

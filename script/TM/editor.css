@@ -1,0 +1,148 @@
+@charset 'utf-8';
+/**
+ * Cascading Style Sheet for G.Snowhawk Application
+ *
+ * @copyright 2017 PlusFive (https://www.plus-5.com)
+ * @version 2.0.0
+ */
+#mask {
+  background-color: rgba(0,0,0,.5);
+  bottom: 0;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 100;
+}
+#mask form.link {
+  width: 280px;
+  background: #fff;
+  border-radius: 4px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  padding: 8px 12px;
+  text-align: left;
+}
+#mask form input {
+  margin: 0 0 2px;
+}
+#mask form input[type="text"] {
+  width: 100%;
+  vertical-align: top;
+}
+
+#image-viewer {
+  background: #fff;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  height: 380px;
+  left: 0;
+  margin: auto;
+  max-width: 980px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100%;
+}
+#image-viewer .scroller {
+  box-sizing: border-box;
+  flex-grow: 1;
+  overflow: auto;
+  padding: 8px 0 40px 4px;
+  position: relative;
+}
+#image-viewer .footer {
+  align-items: center;
+  display: flex;
+  padding: 4px 8px;
+  position: relative;
+}
+#image-viewer .footer > input {
+  margin: auto 2px;
+}
+#image-viewer .footer > a {
+  color: #69c;
+  display: inline-block;
+  font-size: 0.8rem;
+  line-height: 1;
+  margin: auto 2px;
+  padding: 0.5rem 0.8rem;
+}
+#image-viewer .footer > a:first-of-type {
+  margin-left: auto;
+  visibility: hidden;
+}
+.image-set {
+  display: inline-block;
+  position: relative;
+  margin: 0 4px 8px 0;
+}
+.image-set span.selected,
+.image-set label {
+  background: transparent url(editor/plus.svg) no-repeat 50% 50%;
+  background-size: 48px 48px;
+  border: 1px dashed #ccc;
+  display: inline-block;
+  height: 100px;
+  min-width: 100px;
+  text-align: center;
+  vertical-align: top;
+}
+.image-set span.selected {
+  border: 1px solid #ccc;
+  background-image: none;
+}
+.image-set input[type="file"] {
+  display: none;
+}
+.thumbnail img {
+  height: 100px;
+}
+.image-set a {
+  background: transparent url(editor/icon_delete.svg) no-repeat 50% 50%;
+  background-size: 32px;
+  bottom: 0;
+  display: none;
+  height: 32px;
+  line-height: 1;
+  margin: 0;
+  opacity: 1;
+  position: absolute;
+  right: 0;
+  transition: opacity .3s ease;
+  vertical-align: top;
+  width: 32px;
+}
+#thumbnails.edit-mode a {
+  display: inline-block;
+}
+.image-set span.selected .checked {
+  background: transparent url(editor/icon_check_mark.svg) no-repeat 50% 50%;
+  background-size: 32px;
+  bottom: 0;
+  display: inline-block;
+  height: 32px;
+  line-height: 1;
+  margin: 0;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  transition: opacity .5s ease;
+  vertical-align: top;
+  width: 32px;
+}
+.image-set span.editor-image-active .checked {
+  background-image: url(editor/icon_check.svg);
+}
+.image-set span.editor-image-active .checked,
+.image-set span.selected:hover .checked {
+  opacity: 1;
+}
+#thumbnails.edit-mode .image-set span.selected .checked {
+  display: none;
+}
