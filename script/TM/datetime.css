@@ -1,0 +1,108 @@
+@charset "UTF-8";
+
+.calendar-ui-popup {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 12px;
+  position: absolute;
+  z-index: 800;
+}
+
+.calendar-ui table {
+  border-collapse: collapse;
+  width: auto;
+}
+.calendar-ui table td {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  border: 1px solid #dfdfdf;
+  box-sizing: border-box;
+  font-family: system-ui;
+  font-size: .8rem;
+  height: 2em;
+  padding: .25em;
+  text-align: right;
+  user-select: none;
+  width: 2em;
+}
+.calendar-ui table thead td {
+  text-align: center;
+  vertical-align: middle;
+}
+.calendar-ui table td.disable {
+  color: #999;
+}
+.calendar-ui table td.clickable {
+  cursor: pointer;
+}
+.calendar-ui table td.clickable:hover {
+  background: linear-gradient(to bottom, #9cf, #fff);
+}
+.calendar-ui table td.active {
+  background: #ff0;
+}
+.calendar-ui caption > div {
+  display: flex;
+}
+.calendar-ui caption span.current {
+  flex-grow: 1;
+  font-family: Arial, sans-serif;
+}
+.calendar-ui caption a {
+  color: #999;
+  font-size: 0;
+  text-decoration: none;
+}
+.calendar-ui caption a:hover {
+  color: #00f;
+}
+.calendar-ui caption a.prev:before {
+  content: '◀︎';
+  font-size: .75rem;
+}
+.calendar-ui caption a.today:after {
+  content: '●';
+  font-size: .75rem;
+  margin: auto .25em;
+}
+.calendar-ui caption a.next:after {
+  content: '▶︎';
+  font-size: .75rem;
+}
+
+.calendar-ui .controls {
+  display: flex;
+  justify-content: space-between;
+  font-family: Arial, sans-serif;
+  margin: 8px 0 0;
+}
+.calendar-ui .controls .times {
+  align-items: center;
+  border: 1px solid #ccc;
+  display: flex;
+  font-size: .75rem;
+  padding: .25em .5em;
+}
+.calendar-ui .controls .times span {
+  margin: 0 .25em;
+}
+.calendar-ui .controls select {
+  background: #fff none;
+  border: 0 none transparent;
+  border-radius: 0;
+  font-size: .75rem;
+  padding: 0;
+}
+.calendar-ui .controls select:first-child:after {
+  text-align: right;
+}
+.calendar-ui .controls button {
+  background: transparent;
+  border: 1px solid #ccc;
+  color: #666;
+  font-size: .75rem;
+  line-height: 1;
+  min-width: auto;
+  padding: .25em .5em;
+}

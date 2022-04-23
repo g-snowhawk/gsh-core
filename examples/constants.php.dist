@@ -1,0 +1,54 @@
+<?php
+/*
+ * Language setting
+ */
+mb_internal_encoding('UTF-8');
+setlocale(LC_ALL, 'ja_JP.UTF-8');
+
+/*
+ * Switch Debugmode
+ *
+ * - disable : 0
+ * - enable  : 1
+ */
+define('DEBUG_MODE', 0);
+
+/*
+ * E-mail address for receipt feedback
+ * You can use comma separated list for sending multiple copies of a feedback.
+ */
+//define('FEEDBACK_ADDR', 'someone@example.com');
+
+/*
+ * The location of system used files
+ */
+define('SYSTEM_ROOT', __DIR__);
+
+/*
+ * The location of configuration file
+ */
+define('CONFIG_FILE', SYSTEM_ROOT . '/data/config.php');
+
+/*
+ * The location of error log file
+ */
+define('ERROR_LOG_DESTINATION', SYSTEM_ROOT . '/data/logs/error.log');
+
+/*
+ * The template for display errors
+ */
+define('ERROR_DOCUMENT', 'templates/Error.tpl');
+
+/*
+ * The location of autoloader
+ */
+//define('AUTOLOADER', 'path/to/autoload.php');
+
+/*
+ * The list of additional include path
+ */
+//const INCLUDE_PATH = [
+//    '.',
+//    SYSTEM_ROOT.'/data/apps',
+//    SYSTEM_ROOT.'/lib',
+//];

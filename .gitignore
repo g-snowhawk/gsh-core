@@ -34,6 +34,7 @@ dw_php_codehinting.config
 data/*
 data/apps/Tms/*
 data/apps/plugins/*
+/vendor
 
 # Allows
 !data/apps
