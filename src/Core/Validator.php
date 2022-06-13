@@ -156,7 +156,7 @@ class Validator
 
         switch ($type) {
             case 'blank':
-                $result = empty($value) && $value === '0';
+                $result = !is_null($value) && $value !== '';
                 break;
             case 'date_format':
                 if (preg_match('/^(([0-9]{2})?([0-9]{2}))[\/\-\.]([0-9]{1,2})[\/\-\.]([0-9]{1,2})$/', $value, $match)) {
