@@ -17,14 +17,15 @@ switch (document.readyState) {
         break;
 }
 
-let tmsFileUploaderMode = undefined;
-let tmsFileUploaderForm = undefined;
 let tmsFileUploaderCanceller = undefined;
 let tmsFileUploaderCountFiles = undefined;
 let tmsFileUploaderCountDirectory = undefined;
 let tmsFileUploaderCountError = undefined;
 let tmsFileUploaderDirectoryMessage = undefined;
 let tmsFileUploaderErrorMessage = undefined;
+let tmsFileUploaderFiles = undefined;
+let tmsFileUploaderForm = undefined;
+let tmsFileUploaderMode = undefined;
 
 function tmsFileUploaderInit() {
     const opener = document.querySelectorAll('.file-uploader');
@@ -59,6 +60,13 @@ function tmsFileUploaderInit() {
         alert(err);
         setcookie('tmsFileUploadMessage', null);
     }
+
+    const fileRows = document.querySelectorAll('tr.file');
+    tmsFileUploaderFiles = [];
+    fileRows.forEach(row => {
+        const tag = row.querySelector('.renamable');
+        tmsFileUploaderFiles.push(tag.innerHTML);
+    });
 }
 
 function tmsFileUploaderOpen(event) {
@@ -87,6 +95,9 @@ function tmsFileUploaderOnChange(event) {
 
     for (let i = 0; i < element.files.length; i++) {
         const file = element.files[i];
+        if (false === tmsFileUploaderConfirmOverwrite(file)) {
+            continue;
+        }
         tmsFileUploaderUpload(file);
         tmsFileUploaderCountFiles++;
     }
@@ -109,6 +120,7 @@ function tmsFileUploaderDragAndDrop(event) {
                 tmsFileUploaderCountError = 0;
             }
             const items = event.dataTransfer.items;
+
             let files = 0;
             for (let i = 0; i < items.length; i++) {
                 const item = items[i];
@@ -124,11 +136,19 @@ function tmsFileUploaderDragAndDrop(event) {
                     tmsFileUploaderCountDirectory++;
                     continue;
                 }
+
+                let overwritten = true;
                 file.file(file => {
+                    if (false === tmsFileUploaderConfirmOverwrite(file)) {
+                        overwritten = false;
+                        return;
+                    }
                     tmsFileUploaderUpload(file)
                     tmsFileUploaderCountFiles++;
                 });
-                files++;
+                if (overwritten) {
+                    files++;
+                }
             }
 
             if (files === 0) {
@@ -149,6 +169,16 @@ function tmsFileUploaderDragAndDrop(event) {
             // NooP
             break;
     }
+}
+
+function tmsFileUploaderConfirmOverwrite(file)
+{
+    if (tmsFileUploaderFiles.indexOf(file.name) !== -1) {
+        const mesg = (element.dataset.confirmOverwrite || '%s is already exists! Overwrite file?').replace(/%s/, file.name);
+        return confirm(mesg);
+    }
+
+    return true;
 }
 
 function tmsFileUploaderUpload(file) {
