@@ -103,7 +103,7 @@
         </div>
         <div class="footer-controls">
           <div id="file-selector" data-error-message="%d個のファイルアップロードに失敗しました" data-directory-message="%d個のディレクトリをスキップしました">
-            <label class="droparea">
+            <label class="droparea" data-confirm-overwrite="%sは既に存在します。置き換えますか？">
               <input type="file" name="file" id="file" multiple>
               <span>ここにファイルをドロップします<br><small>またはクリックしてファイルを選択します</small></span>
             </label>
