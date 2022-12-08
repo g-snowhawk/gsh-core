@@ -127,11 +127,21 @@ class Pdf
                 continue;
             }
             switch (strtolower($key)) {
-                case 'author':   $this->engine->SetAuthor($value); break;
-                case 'creator':  $this->engine->SetCreator($value); break;
-                case 'keywords': $this->engine->SetKeywords($value); break;
-                case 'subject':  $this->engine->SetSubject($value); break;
-                case 'title':    $this->engine->SetTitle($value); break;
+                case 'author':
+                    $this->engine->SetAuthor($value);
+                    break;
+                case 'creator':
+                    $this->engine->SetCreator($value);
+                    break;
+                case 'keywords':
+                    $this->engine->SetKeywords($value);
+                    break;
+                case 'subject':
+                    $this->engine->SetSubject($value);
+                    break;
+                case 'title':
+                    $this->engine->SetTitle($value);
+                    break;
             }
         }
     }
@@ -298,5 +308,10 @@ class Pdf
     public function signing($certificate, $privatekey, $privatekey_password, $extracerts = '', $type = 2, array $info = [])
     {
         $this->engine->setSignature($certificate, $privatekey, $privatekey_password, $extracerts, $type, $info);
+    }
+
+    public function setTimeStamp($tsa_host = '', $tsa_username = '', $tsa_password = '', $tsa_cert = ''): void
+    {
+        $this->engine->setTimeStamp($tsa_host, $tsa_username, $tsa_password, $tsa_cert);
     }
 }

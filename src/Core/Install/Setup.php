@@ -153,52 +153,52 @@ class Setup
 
             $valid = [];
             switch ($this->mode) {
-            case 'step1':
-                $valid[] = ['vl_base_url', 'base_url', 'empty'];
-                $valid[] = ['vl_base_url_2', 'base_url', 'uri'];
-                $valid[] = ['vl_domain_name', 'domain_name', 'empty'];
-                $valid[] = ['vl_docroot', 'docroot', 'empty'];
-                $valid[] = ['vl_notexists_docroot', 'docroot', 'exists'];
-                $valid[] = ['vl_save_dir', 'save_dir', 'empty'];
-                $valid[] = ['vl_notexists_save_dir', 'save_dir', 'exists'];
-                $valid[] = ['vl_notwritable_save_dir', 'save_dir', 'writable'];
-                $valid[] = ['vl_assets_path', 'assets_path', 'empty'];
+                case 'step1':
+                    $valid[] = ['vl_base_url', 'base_url', 'empty'];
+                    $valid[] = ['vl_base_url_2', 'base_url', 'uri'];
+                    $valid[] = ['vl_domain_name', 'domain_name', 'empty'];
+                    $valid[] = ['vl_docroot', 'docroot', 'empty'];
+                    $valid[] = ['vl_notexists_docroot', 'docroot', 'exists'];
+                    $valid[] = ['vl_save_dir', 'save_dir', 'empty'];
+                    $valid[] = ['vl_notexists_save_dir', 'save_dir', 'exists'];
+                    $valid[] = ['vl_notwritable_save_dir', 'save_dir', 'writable'];
+                    $valid[] = ['vl_assets_path', 'assets_path', 'empty'];
 
-                // algorithms
-                $algo = ['crypt'];
-                $algo = array_merge($algo, Security::hash_algos());
-                $algo = array_merge($algo, Security::openssl_get_cipher_methods());
-                $this->view->bind('algo', $algo);
+                    // algorithms
+                    $algo = ['crypt'];
+                    $algo = array_merge($algo, Security::hash_algos());
+                    $algo = array_merge($algo, Security::openssl_get_cipher_methods());
+                    $this->view->bind('algo', $algo);
 
-                break;
-            case 'step2':
-                $valid[] = ['vl_db_driver', 'db_driver', 'empty'];
-                $valid[] = ['vl_db_host', 'db_host', 'empty'];
-                $valid[] = ['vl_db_source', 'db_source', 'empty'];
-                $valid[] = ['vl_db_user', 'db_user', 'empty'];
-                $valid[] = ['vl_db_password', 'db_password', 'empty'];
+                    break;
+                case 'step2':
+                    $valid[] = ['vl_db_driver', 'db_driver', 'empty'];
+                    $valid[] = ['vl_db_host', 'db_host', 'empty'];
+                    $valid[] = ['vl_db_source', 'db_source', 'empty'];
+                    $valid[] = ['vl_db_user', 'db_user', 'empty'];
+                    $valid[] = ['vl_db_password', 'db_password', 'empty'];
 
-                // algorithms
-                $algo = ['crypt'];
-                $algo = array_merge($algo, Security::hash_algos());
-                $algo = array_merge($algo, Security::openssl_get_cipher_methods());
-                $this->view->bind('algo', $algo);
+                    // algorithms
+                    $algo = ['crypt'];
+                    $algo = array_merge($algo, Security::hash_algos());
+                    $algo = array_merge($algo, Security::openssl_get_cipher_methods());
+                    $this->view->bind('algo', $algo);
 
-                break;
-            case 'step3':
-                $valid[] = ['vl_fullname', 'fullname', 'empty'];
-                $valid[] = ['vl_email', 'email', 'empty'];
-                $valid[] = ['vl_uname', 'uname', 'empty'];
-                $valid[] = ['vl_upass', 'upass', 'empty'];
-                $valid[] = ['vl_retype', 'upass,retype', 'retype'];
+                    break;
+                case 'step3':
+                    $valid[] = ['vl_fullname', 'fullname', 'empty'];
+                    $valid[] = ['vl_email', 'email', 'empty'];
+                    $valid[] = ['vl_uname', 'uname', 'empty'];
+                    $valid[] = ['vl_upass', 'upass', 'empty'];
+                    $valid[] = ['vl_retype', 'upass,retype', 'retype'];
 
-                $this->view->bind('base_url', $this->cnf['global']['base_url']);
+                    $this->view->bind('base_url', $this->cnf['global']['base_url']);
 
-                $this->view->bind('config_path', $this->config);
+                    $this->view->bind('config_path', $this->config);
 
-                break;
-            case 'step4':
-                break;
+                    break;
+                case 'step4':
+                    break;
             }
 
             if (false !== $this->validate($valid)) {

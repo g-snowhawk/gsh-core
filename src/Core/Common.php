@@ -293,13 +293,13 @@ abstract class Common
     {
         $current_app = $this->session->param('application_name');
         switch ($type) {
-        case 'basename':
-            if (false !== ($index = strpos($current_app, '#'))) {
-                $current_app = substr($current_app, $index + 1);
-            }
-            break;
-        default:
-            break;
+            case 'basename':
+                if (false !== ($index = strpos($current_app, '#'))) {
+                    $current_app = substr($current_app, $index + 1);
+                }
+                break;
+            default:
+                break;
         }
 
         return $current_app;
@@ -676,6 +676,14 @@ abstract class Common
         Http::nocache();
         Http::responseHeader('Content-type', 'application/json');
         echo json_encode($json);
+        exit;
+    }
+
+    public static function responsePDF($path)
+    {
+        Http::nocache();
+        Http::responseHeader('Content-type', 'application/pdf');
+        readfile($path);
         exit;
     }
 

@@ -149,7 +149,9 @@ input[type="time"]:focus,
 input[type="number"]:focus,
 input[type="password"]:focus,
 input[type="text"]:focus,
+select:focus,
 textarea:focus {
+  border-color: #999;
 }
 input.sourcecode, textarea.sourcecode {
   font-family: 'Courier New', Courier, monospace;
@@ -909,6 +911,7 @@ a.small-button:hover {
 .fieldset input.sametext,
 .fieldset input[type="datetime-local"],
 .fieldset input[type="date"],
+.fieldset input[type="number"],
 .fieldset input[type="time"],
 .fieldset input[type="password"],
 .fieldset input[type="text"] {
@@ -2176,6 +2179,7 @@ table.nlist tbody td label input {
 #subform-container .fieldset input.sametext,
 #subform-container .fieldset input[type="datetime-local"],
 #subform-container .fieldset input[type="date"],
+#subform-container .fieldset input[type="number"],
 #subform-container .fieldset input[type="time"],
 #subform-container .fieldset input[type="password"],
 #subform-container .fieldset input[type="text"],
@@ -2184,10 +2188,23 @@ table.nlist tbody td label input {
   border-left: 1px solid #ccc;
   border-radius: 4px;
 }
+#subform-container .fieldset div.input:focus,
+#subform-container .fieldset input.sametext:focus,
+#subform-container .fieldset input[type="datetime-local"]:focus,
+#subform-container .fieldset input[type="date"]:focus,
+#subform-container .fieldset input[type="number"]:focus,
+#subform-container .fieldset input[type="time"]:focus,
+#subform-container .fieldset input[type="password"]:focus,
+#subform-container .fieldset input[type="text"]:focus,
+#subform-container .fieldset select:focus,
+#subform-container .fieldset textarea:focus {
+  border-left-color: #999;
+}
 /* subform input error style */
 #subform-container .invalid input.sametext,
 #subform-container .invalid input[type="datetime-local"],
 #subform-container .invalid input[type="date"],
+#subform-container .invalid input[type="number"],
 #subform-container .invalid input[type="time"],
 #subform-container .invalid input[type="password"],
 #subform-container .invalid input[type="text"],

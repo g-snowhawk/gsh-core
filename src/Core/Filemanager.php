@@ -538,34 +538,34 @@ class Filemanager extends User
                 $dir = (is_dir($path)) ? $path : dirname($path);
 
                 switch ($match[1]) {
-                case 'read':
-                    $is_hidden = false;
-                    while ($this->rootdir !== rtrim($dir, '/')) {
-                        if (file_exists($dir . '/' . self::ACL_HIDDEN)) {
-                            $is_hidden = true;
-                            break;
+                    case 'read':
+                        $is_hidden = false;
+                        while ($this->rootdir !== rtrim($dir, '/')) {
+                            if (file_exists($dir . '/' . self::ACL_HIDDEN)) {
+                                $is_hidden = true;
+                                break;
+                            }
+                            $dir = dirname($dir);
                         }
-                        $dir = dirname($dir);
-                    }
 
-                    return ($is_hidden) ? false : is_readable($path);
-                case 'create':
-                case 'delete':
-                case 'update':
-                    $is_readonly = false;
-                    while ($this->rootdir !== rtrim($dir, '/')) {
-                        if (file_exists($dir . '/' . self::ACL_WRITABLE)) {
-                            $is_readonly = false;
-                            break;
+                        return ($is_hidden) ? false : is_readable($path);
+                    case 'create':
+                    case 'delete':
+                    case 'update':
+                        $is_readonly = false;
+                        while ($this->rootdir !== rtrim($dir, '/')) {
+                            if (file_exists($dir . '/' . self::ACL_WRITABLE)) {
+                                $is_readonly = false;
+                                break;
+                            }
+                            if (file_exists($dir . '/' . self::ACL_READONLY)) {
+                                $is_readonly = true;
+                                break;
+                            }
+                            $dir = dirname($dir);
                         }
-                        if (file_exists($dir . '/' . self::ACL_READONLY)) {
-                            $is_readonly = true;
-                            break;
-                        }
-                        $dir = dirname($dir);
-                    }
 
-                    return ($is_readonly) ? false : is_writable($path);
+                        return ($is_readonly) ? false : is_writable($path);
                 }
             }
         }
