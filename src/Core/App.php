@@ -139,7 +139,6 @@ class App extends Base
 
         // Authentication
         if (isset($loggedin) && $loggedin !== parent::ident()) {
-
             // Check Installed.
             $installed = 0;
             switch ($this->cnf('database:db_driver')) {

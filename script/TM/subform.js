@@ -232,6 +232,9 @@ Subform.prototype.posted = function(json, form) {
     switch (json.response.type) {
         case 'callback':
             var args = json.arguments ? json.arguments : [];
+            if (json.response.arguments) {
+                args = json.response.arguments;
+            }
             TM.apply(json.response.source, args);
             break;
         case 'close':
