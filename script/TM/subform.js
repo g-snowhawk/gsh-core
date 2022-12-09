@@ -320,6 +320,11 @@ Subform.prototype.submit = function(form) {
             // TODO: add error handling
             console.log(this.responseText);
             alert('System Error!');
+
+            var buttons = form.querySelectorAll("button[type=submit], input[type=submit]");
+            for (i = 0, max = buttons.length; i < max; i++) {
+                buttons[i].disabled = false;
+            }
         }
     });
 
