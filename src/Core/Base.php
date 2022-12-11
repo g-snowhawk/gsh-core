@@ -740,8 +740,11 @@ abstract class Base
         if (!is_null($application_name)) {
             $this->session->param('application_name', $application_name);
         }
-        if (!$this->session->param('application_name')) {
-            $mode = $this->getMode();
+
+        $current_appname = $this->session->param('application_name');
+        $mode = $this->getMode();
+
+        if (!$current_appname || strpos($mode, $current_appname) !== 0) {
             if (preg_match('/^([0-9a-z_\-]+)~.+$/', $mode, $match)) {
                 $this->root = self::upperCamelCase($match[1]);
                 $mode = preg_replace('/^[0-9a-z_\-]+~/', '', $mode);
