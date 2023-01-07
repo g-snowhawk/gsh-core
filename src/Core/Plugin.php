@@ -34,7 +34,7 @@ class Plugin extends User
     public function __construct()
     {
         $params = func_get_args();
-        call_user_func_array('parent::__construct', $params);
+        call_user_func_array(parent::class.'::__construct', $params);
     }
 
     /**
@@ -44,7 +44,7 @@ class Plugin extends User
      */
     public static function register()
     {
-        return spl_autoload_register('self::autoLoad', true, true);
+        return spl_autoload_register(self::class.'::autoLoad', true, true);
     }
 
     /**

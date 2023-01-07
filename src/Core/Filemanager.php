@@ -52,7 +52,7 @@ class Filemanager extends User
     public function __construct()
     {
         setlocale(LC_ALL, 'ja_JP.UTF-8');
-        call_user_func_array('parent::__construct', func_get_args());
+        call_user_func_array(parent::class.'::__construct', func_get_args());
 
         if (($this->skip_header ?? false) !== true
             && empty($header = $this->view->param('header'))
