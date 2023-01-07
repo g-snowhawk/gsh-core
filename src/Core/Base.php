@@ -133,6 +133,10 @@ abstract class Base
 
         if (!is_null($this->cnf('database:db_host'))) {
             $this->createDbInstance();
+            // Open database
+            if (!$this->db->open()) {
+                trigger_error('Could not open database connection. ', E_USER_ERROR);
+            }
         }
 
         $save_path = null;
@@ -167,7 +171,11 @@ abstract class Base
         $this->session->setName($name);
         $this->session->start();
 
+        // Create based view instance
+        $current_appname = $this->session->param('application_name');
+        $this->session->clear('application_name');
         $this->view = $this->createView();
+        $this->session->param('application_name', $current_appname);
     }
 
     /**
@@ -632,6 +640,7 @@ abstract class Base
     public function getDefaultMode()
     {
         $current_application = $this->session->param('application_name');
+
         if (false === Variable::isEmpty($current_application)) {
             $class = Common::classFromApplicationName($current_application);
             $mode = method_exists($class, 'getDefaultMode') ? $class::getDefaultMode($this) : $class::DEFAULT_MODE;

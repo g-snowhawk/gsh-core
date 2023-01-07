@@ -82,11 +82,6 @@ class App extends Base
 
     public function run()
     {
-        // Open database
-        if (!is_null($this->cnf('database:db_host')) && !$this->db->open()) {
-            trigger_error('Could not open database connection. ', E_USER_ERROR);
-        }
-
         // CLI mode
         if (php_sapi_name() === 'cli') {
             global $argv;

@@ -199,6 +199,7 @@ class View implements ViewInterface
         try {
             $source = $this->engine->render($template);
         } catch (Exception $e) {
+            $this->rendering = false;
             throw new ViewException($e->getMessage(), $e->getCode(), $e);
         }
         $this->rendering = false;
