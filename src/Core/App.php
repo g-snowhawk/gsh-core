@@ -10,6 +10,7 @@
 
 namespace Gsnowhawk;
 
+use Gsnowhawk\Common\Environment as Env;
 use Gsnowhawk\Common\Http;
 
 /**
@@ -122,12 +123,14 @@ class App extends Base
 
         $loggedin = $this->session->param('authorized') ?? 'failed';
 
+        $secure = (Env::server('https') === 'on' || Env::server('http_x_forwarded_proto') === 'https');
+
         // Signout
-        if ($_SERVER['QUERY_STRING'] === 'logout' ||
+        if (Env::server('query_string') === 'logout' ||
             ($this->request->method === 'post' && $this->request->POST('stub') !== $this->session->param('ticket'))
         ) {
             $this->logger->log('Signout');
-            $this->setcookie('limit', '', time() - 3600);
+            $this->setcookie('limit', '', time() - 3600, null, null, $secure);
             $this->session->destroy();
             Http::redirect($this->reload());
         }
@@ -156,7 +159,7 @@ class App extends Base
             } else {
                 // Failure
                 if (false === $this->auth('user')) {
-                    $this->setcookie('enableCookie', 'yes', 0, null, null, false, false);
+                    $this->setcookie('enableCookie', 'yes', 0, null, null, $secure, false);
 
                     // Check guest executable
                     if (false === $this->guestExcutable($this->getMode())) {
@@ -176,7 +179,7 @@ class App extends Base
                     time() + $limit,
                     $this->session->getCookiePath(),
                     $this->session->getCookieDomain(),
-                    false,
+                    $secure,
                     true
                 );
             }
