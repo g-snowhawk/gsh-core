@@ -153,7 +153,7 @@ abstract class Base
             }
         }
         $domain = (string)$this->cnf('session:domain');
-        $secure = (Env::server('https') === 'on');
+        $secure = (Env::server('https') === 'on' || Env::server('http_x_forwarded_proto'));
         $httponly = true;
 
         if (php_sapi_name() === 'cli') {
