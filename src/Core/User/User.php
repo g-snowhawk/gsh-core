@@ -88,7 +88,7 @@ class User extends Common
                 if (is_null($value)) {
                     continue;
                 }
-                $type = strtolower($fields[$key]['Type']);
+                $type = strtolower($fields[$key]['Type'] ?? '');
                 if (preg_match('/^(integer|int|smallint|tinyint|mediumint|bigint)/', $type)) {
                     $this->userinfo[$key] = intval($value);
                 } elseif (preg_match('/^(decimal|numeric|float|double)/', $type)) {
