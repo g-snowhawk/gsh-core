@@ -140,7 +140,7 @@ abstract class Base
         }
 
         $save_path = null;
-        if (!defined('DONT_CHANGE_SESSION_SAVE_PATH') || DONT_CHANGE_SESSION_SAVE_PATH !== 1) {
+        if (defined('DONT_CHANGE_SESSION_SAVE_PATH') && DONT_CHANGE_SESSION_SAVE_PATH === 0) {
             $save_path = $this->cnf('global:tmp_dir');
         }
 
