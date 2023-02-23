@@ -67,6 +67,11 @@ abstract class Common
 
         $this->setCurrentApplication();
 
+        $cl = $this->classFromApplicationName($this->currentApp());
+        if (!empty($cl)) {
+            $this->view->addPath($cl::templateDir());
+        }
+
         $this->pager = new Pagination();
     }
 
