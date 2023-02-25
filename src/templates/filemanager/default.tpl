@@ -17,7 +17,7 @@
         <nav>
           <ul>
             {% import "filemanager/tree.tpl" as tree %}
-            {{ tree.recursion(null, null, appname) }}
+            {{ tree.recursion(null, null, appname, 0) }}
           </ul>
         </nav>
       </div>
@@ -32,7 +32,7 @@
               <span class="breadcrumbs"><span class="root">/</span>
             {% endif %}
             {% if path is not empty %}
-              <a href="?mode={{ appname }}.filemanager.receive:set-directory&amp;path={{ path|url_encode }}">{{ dir }}</a>
+              <a href="?mode={{ appname }}.filemanager.receive:set-directory&amp;path={{ path|url_encode }}">{{ aliases[dir] ?? dir }}</a>
             {% endif %}
             {% if loop.last %}
               </span>
@@ -66,7 +66,7 @@
             {% for unit in files %}
               <tr class="{{ unit.kind }}">
                 {% if unit.kind == 'folder' %}
-                  <td class="link spacer with-icon"><a href="?mode={{ appname }}.filemanager.receive:set-directory&amp;path={{ unit.path|url_encode }}" class="{{ renameClass }}">{{ unit.name }}</a></td>
+                  <td class="link spacer with-icon"><a href="?mode={{ appname }}.filemanager.receive:set-directory&amp;path={{ unit.path|url_encode }}" class="{{ renameClass }}">{{ aliases[unit.name] ?? unit.name }}</a></td>
                 {% else %}
                   <td class="link spacer with-icon"><span class="{{ renameClass }}">{{ unit.name }}</span></td>
                 {% endif %}
