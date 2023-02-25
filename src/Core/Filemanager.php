@@ -167,6 +167,10 @@ class Filemanager extends User
         try {
             $entries = (empty($cwd)) ? [] : scandir($cwd);
             foreach ($entries as $entry) {
+                if ($entry === '.' || $entry === '..') {
+                    continue;
+                }
+
                 $path = "$cwd/$entry";
 
                 $is_hidden = false;
@@ -191,14 +195,12 @@ class Filemanager extends User
                     }
                 }
 
-                if ($entry === '.'
-                    || $entry === '..'
+                if ($is_hidden
                     || $entry === self::ACL_READONLY
                     || $entry === self::ACL_WRITABLE
                     || $entry === self::ACL_HIDDEN
                     || ($filter === 'file' && is_dir($path))
                     || ($filter === 'directory' && is_file($path))
-                    || $is_hidden
                 ) {
                     continue;
                 }
