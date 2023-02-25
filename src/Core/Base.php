@@ -304,7 +304,7 @@ abstract class Base
         if ($this->session->param('authenticationFrequency') === 'everytime') {
             if (empty($uname)) {
                 $uname = $this->session->param('uname');
-                $secret = $this->session->param('securet');
+                $secret = $this->session->param('secret');
             }
         }
 
@@ -336,12 +336,12 @@ abstract class Base
                     $secret = uniqid();
                     $this->session->param('authorized', self::ident($uname, $secret));
                     $this->session->param('uname', $uname);
-                    $this->session->param('securet', $secret);
+                    $this->session->param('secret', $secret);
 
                     return true;
                 } elseif ($this->session->param('uname') === self::GUESTNAME && empty($uname)) {
                     $this->session->clear('authorized');
-                    $this->session->clear('securet');
+                    $this->session->clear('secret');
                 }
             }
             $this->view->bind(
@@ -389,10 +389,10 @@ abstract class Base
             $this->setcookie('limit', $limit);
         }
 
-        $securet = bin2hex(openssl_random_pseudo_bytes(16));
-        $this->session->param('authorized', self::ident($uname, $securet));
+        $secret = bin2hex(openssl_random_pseudo_bytes(16));
+        $this->session->param('authorized', self::ident($uname, $secret));
         $this->session->param('uname', $uname);
-        $this->session->param('securet', $securet);
+        $this->session->param('secret', $secret);
 
         $this->logger->log('Signin');
 
@@ -407,29 +407,31 @@ abstract class Base
      *
      * @return string
      */
-    public function ident($name = null, $securet = null)
+    public function ident($name = null, $secret = null)
     {
         if (is_null($name)) {
             $name = $this->session->param('uname');
         }
-        if (is_null($securet)) {
-            $securet = $this->session->param('securet');
+        if (is_null($secret)) {
+            $secret = $this->session->param('secret');
         }
 
-        if ($name === self::GUESTNAME && $this->cnf('application:guest') === 'allow' && !empty($securet)) {
-            return $securet;
+        if (empty($first_contact = $this->session->param('first_contact'))) {
+            $first_contact = $this->session->param(
+                'first_contact',
+                'from ' . filter_input(INPUT_SERVER, 'REMOTE_ADDR') . ' at ' . microtime()
+            );
         }
 
-        if ($this->session->param('authenticationFrequency') === 'everytime' || is_null($securet)) {
-            $securet = md5(random_bytes(12));
+        if ($name === self::GUESTNAME && $this->cnf('application:guest') === 'allow' && !empty($secret)) {
+            return $secret;
         }
 
-        return openssl_encrypt(
-            $name.filter_input(INPUT_SERVER, 'REMOTE_ADDR').
-            filter_input(INPUT_SERVER, 'HTTP_USER_AGENT'),
-            'aes-128-ecb',
-            $securet
-        );
+        if ($this->session->param('authenticationFrequency') === 'everytime' || is_null($secret)) {
+            $secret = md5(random_bytes(12));
+        }
+
+        return hash('sha256', $name.$first_contact.filter_input(INPUT_SERVER, 'HTTP_USER_AGENT').$secret);
     }
 
     public static function lowerCamelCase($str)

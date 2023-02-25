@@ -189,10 +189,10 @@ class Response extends Unauth
         $this->session->param('origin', $origin);
 
         $uname = $this->db->get('uname', 'user', 'id=?', [$this->request->param('id')]);
-        $securet = bin2hex(openssl_random_pseudo_bytes(16));
-        $this->session->param('authorized', $this->app->ident($uname, $securet));
+        $secret = bin2hex(openssl_random_pseudo_bytes(16));
+        $this->session->param('authorized', $this->app->ident($uname, $secret));
         $this->session->param('uname', $uname);
-        $this->session->param('securet', $securet);
+        $this->session->param('secret', $secret);
 
         $this->clearUserInfo();
 
@@ -218,10 +218,10 @@ class Response extends Unauth
 
         $uname = array_pop($origin);
         if (!empty($uname)) {
-            $securet = bin2hex(openssl_random_pseudo_bytes(16));
-            $this->session->param('authorized', $this->app->ident($uname, $securet));
+            $secret = bin2hex(openssl_random_pseudo_bytes(16));
+            $this->session->param('authorized', $this->app->ident($uname, $secret));
             $this->session->param('uname', $uname);
-            $this->session->param('securet', $securet);
+            $this->session->param('secret', $secret);
 
             if (empty($origin)) {
                 $this->session->clear('origin');
