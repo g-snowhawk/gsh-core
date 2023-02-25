@@ -432,12 +432,6 @@ abstract class Base
         }
 
         return hash('sha256', $name.$first_contact.filter_input(INPUT_SERVER, 'HTTP_USER_AGENT').$secret);
-
-        return openssl_encrypt(
-            $name.$first_contact.filter_input(INPUT_SERVER, 'HTTP_USER_AGENT'),
-            'aes-128-ecb',
-            $secret
-        );
     }
 
     public static function lowerCamelCase($str)
