@@ -785,7 +785,9 @@ a.small-button:hover {
   /* for modern browsers */
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
-  @supports (backdrop-filter: blur(6px)) or (-webkit-backdrop-filter: blur(6px)) {
+}
+@supports (backdrop-filter: blur(6px)) or (-webkit-backdrop-filter: blur(6px)) {
+  #global-nav li ul {
     background-color: rgba(239,239,239,.2);
   }
 }

@@ -924,7 +924,7 @@ abstract class Base
 
     public function systemURI($fullpath = false)
     {
-        $url = $this->cnf('global:base_url');
+        $url = $this->cnf('global:base_url') ?? '';
         if ($fullpath) {
             return $url;
         }
