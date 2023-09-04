@@ -179,7 +179,10 @@ class Pdf
                 $value .= $data[$key];
             }
             if (empty($value) && $value !== 0 && $value !== '0') {
-                continue;
+                if (!isset($property['default'])) {
+                    continue;
+                }
+                $value = $property['default'];
             }
 
             if (isset($property['dateformat'])
