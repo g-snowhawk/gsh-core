@@ -353,8 +353,12 @@ abstract class Common
         $this->view->render($template);
     }
 
-    public static function classFromApplicationName($application_name)
+    public static function classFromApplicationName($application_name): ?string
     {
+        if (is_null($application_name)) {
+            return null;
+        }
+
         $namespace = 'Gsnowhawk';
         if (false !== ($index = strpos($application_name, '#'))) {
             $namespace = substr($application_name, 0, $index);
