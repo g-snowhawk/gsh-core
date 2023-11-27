@@ -69,7 +69,7 @@ class Filemanager extends User
             'filter1' => $this->session->param('filemanager_filter1') ?? 0,
             'filter2' => $this->session->param('filemanager_filter2') ?? 0,
         ];
-        if (!$this->view->inRendering()) {
+        if (is_a($this->view, 'Gsnowhawk\\View') && !$this->view->inRendering()) {
             $this->view->bind('permission', $this->permission);
         }
 

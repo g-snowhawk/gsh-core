@@ -68,7 +68,7 @@ abstract class Common
         $this->setCurrentApplication();
 
         $cl = $this->classFromApplicationName($this->currentApp());
-        if (!empty($cl)) {
+        if (!empty($cl) && is_a($this->view, 'Gsnowhawk\\View')) {
             $this->view->addPath($cl::templateDir());
         }
 
