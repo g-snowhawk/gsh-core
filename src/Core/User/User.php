@@ -303,7 +303,7 @@ class User extends Common
      */
     public static function getUserID(Db $db)
     {
-        return $db->get('id', 'user', 'uname = ?', [$_SESSION['uname']]);
+        return $db->get('id', 'user', 'uname = ?', [$_SESSION['uname'] ?? null]);
     }
 
     /**

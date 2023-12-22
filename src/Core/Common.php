@@ -277,13 +277,20 @@ abstract class Common
     {
         $nav = [];
         $install_log = $this->app->cnf('global:log_dir') . '/install.log';
+        $userkey = $this->getUserID($this->db);
 
         if (file_exists($install_log)) {
             $tmp = file($install_log);
             foreach ($tmp as $line) {
                 list($class, $version, $md5) = explode("\t", $line);
+                $code = $class::packageName();
+
+                if (!$this->hasPermissionByUser($userkey, $code.'.exec')) {
+                    continue;
+                }
+
                 $nav[] = [
-                    'code' => $class::packageName(),
+                    'code' => $code,
                     'name' => $class::applicationName(),
                     'label' => $class::applicationLabel(),
                     'class' => $class,

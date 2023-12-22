@@ -623,6 +623,13 @@ abstract class Base
             $mode = $swap;
         }
         if (!$mode || !preg_match("/^([0-9a-z_\-]+[~#])?[0-9a-z\._\-]+(:[0-9a-z_\-]+)?(\(.*\))?$/i", $mode ?? '')) {
+            // Load user preferences
+            $uname = $this->session->param('uname');
+            if (!empty($uname)) {
+                $id = $this->db->get('id', 'user', 'uname = ?', [$uname]);
+                $this->mergeConfiguration($id);
+            }
+
             $mode = $this->getDefaultMode();
         }
 
