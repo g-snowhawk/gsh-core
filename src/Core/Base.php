@@ -504,7 +504,7 @@ abstract class Base
     {
         $unit = self::parseMode($mode);
         if (!empty($unit['namespace'])) {
-            if (is_null($plugin_paths)) {
+            if (is_null($plugin_paths) || $unit['namespace'] === __NAMESPACE__) {
                 //
             } elseif (in_array($unit['namespace'], $plugin_paths)) {
                 $unit['namespace'] = '\\' . $unit['namespace'];
@@ -548,7 +548,23 @@ abstract class Base
         $package = $mode;
         $function = self::DEFAULT_METHOD;
         $arguments = null;
-        if (preg_match('/^((.+)[~#])?(.+?)(:+(.+))?$/', $mode, $match)) {
+        if (preg_match('/^\\\(.+?)(:+(.+))?$/', $mode, $match)) {
+            $namespace = __NAMESPACE__;
+            $package = $match[1];
+            if (isset($match[3])) {
+                $function = $match[3];
+                if (preg_match('/(.+)\((.*)\)/', $function, $pair)) {
+                    $function = $pair[1];
+                    $arguments = Text::explode(',', $pair[2]);
+                }
+            }
+            $mode = [
+                'namespace' => $namespace,
+                'package' => $package,
+                'function' => self::lowerCamelCase($function),
+                'arguments' => $arguments,
+            ];
+        } elseif (preg_match('/^((.+)[~#])?(.+?)(:+(.+))?$/', $mode, $match)) {
             $namespace = strtolower($match[2]);
             $separator = substr($match[1], -1);
             if ($separator === '~') {
