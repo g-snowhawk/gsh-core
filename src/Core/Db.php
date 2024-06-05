@@ -145,7 +145,7 @@ class Db extends \Gsnowhawk\Common\Db
      *
      * @return mixed
      */
-    public function insert($table, array $data, $raws = null, $fields = null)
+    public function insert($table, array $data, $raws = null, $fields = null, bool $ignore = false)
     {
         return parent::insert(self::TABLE($table), $data, $raws, $fields);
     }
