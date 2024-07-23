@@ -10,6 +10,8 @@
 
 namespace Gsnowhawk;
 
+use ErrorException;
+use Exception;
 use Gsnowhawk\Common\Auto\Loader as AutoLoader;
 use Gsnowhawk\Common\Environment;
 use Gsnowhawk\Common\Http;
@@ -62,14 +64,16 @@ abstract class Common
         }
 
         if (is_null($this->app)) {
-            throw new \ErrorException('No such application');
+            throw new ErrorException('No such application');
         }
 
         $this->setCurrentApplication();
-
-        $cl = $this->classFromApplicationName($this->currentApp());
-        if (!empty($cl) && is_a($this->view, 'Gsnowhawk\\View')) {
-            $this->view->addPath($cl::templateDir());
+        $current_app = $this->currentApp();
+        if (!empty($current_app)) {
+            $cl = $this->classFromApplicationName($current_app);
+            if (!empty($cl) && is_a($this->view, 'Gsnowhawk\\View')) {
+                $this->view->addPath($cl::templateDir());
+            }
         }
 
         $this->pager = new Pagination();
@@ -306,8 +310,8 @@ abstract class Common
         $current_app = $this->session->param('application_name');
         switch ($type) {
             case 'basename':
-                if (false !== ($index = strpos($current_app, '#'))) {
-                    $current_app = substr($current_app, $index + 1);
+                if (false !== ($index = strpos($current_app ?? '', '#'))) {
+                    $current_app = substr($current_app ?? '', $index + 1);
                 }
                 break;
             default:
@@ -523,7 +527,7 @@ abstract class Common
                 $response['source'] = (is_null($args))
                     ? $instance->$function()
                     : call_user_func_array([$instance, $function], $args);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 trigger_error($e->getMessage());
             }
         }
