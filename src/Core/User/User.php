@@ -388,7 +388,7 @@ class User extends Common
         $userkey = $post['id'];
 
         $class = $this->classFromApplicationName($this->session->param('application_name'));
-        if (method_exists($class, 'clearApplicationPermission')) {
+        if (!is_null($class) && method_exists($class, 'clearApplicationPermission')) {
             if (false === $class::clearApplicationPermission($this->db, $userkey)) {
                 return false;
             }

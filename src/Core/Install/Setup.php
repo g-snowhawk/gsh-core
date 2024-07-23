@@ -79,7 +79,7 @@ class Setup
         $this->session->start();
 
         $tmp_file = $this->request->POST('tmp_file');
-        if (file_exists($tmp_file)) {
+        if (!empty($tmp_file) && file_exists($tmp_file)) {
             $this->cnf = parse_ini_file($tmp_file, true);
         }
 
