@@ -71,7 +71,7 @@ abstract class Common
         $current_app = $this->currentApp();
         if (!empty($current_app)) {
             $cl = $this->classFromApplicationName($current_app);
-            if (!empty($cl) && is_a($this->view, 'Gsnowhawk\\View')) {
+            if (!empty($cl) && class_exists($cl) && is_a($this->view, 'Gsnowhawk\\View')) {
                 $this->view->addPath($cl::templateDir());
             }
         }
@@ -307,7 +307,7 @@ abstract class Common
 
     public function currentApp($type = null): ?string
     {
-        $current_app = $this->session->param('application_name');
+        $current_app = $this->session->param('application_name') ?? '';
         switch ($type) {
             case 'basename':
                 if (false !== ($index = strpos($current_app ?? '', '#'))) {

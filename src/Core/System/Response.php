@@ -76,7 +76,7 @@ class Response extends \Gsnowhawk\System
                     'detail' => $class::getDescription(),
                 ];
                 if ($this->getPackageMd5($namespace) !== md5_file($physical_path)
-                    && version_compare($class::VERSION, $unit['current_version'] ?? -1, '>')
+                    && version_compare($class::VERSION ?? '', $unit['current_version'] ?? -1, '>')
                 ) {
                     $unit['path'] = $physical_path;
                     $unit['new_version'] = $class::VERSION;
