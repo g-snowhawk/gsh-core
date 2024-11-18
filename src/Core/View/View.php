@@ -17,7 +17,6 @@ use Twig\Loader\ArrayLoader;
 use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
 use cebe\markdown\GithubMarkdown;
-
 use Gsnowhawk\Common\File;
 use Gsnowhawk\Common\Html\Format;
 use Gsnowhawk\Common\Http;
