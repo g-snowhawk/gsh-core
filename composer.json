@@ -18,7 +18,7 @@
         "php": ">=8.1.0",
         "setasign/fpdi": "^2.1",
         "tecnickcom/tcpdf": "^6.3",
-        "twig/twig": "^2.7",
+        "twigphp/twig": "^2.7",
         "cebe/markdown": "*",
         "g-snowhawk/gsh-framework": "1.0.*"
     },
