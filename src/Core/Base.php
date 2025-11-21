@@ -852,6 +852,13 @@ abstract class Base
             }
         }
 
+        $extras = (array)$this->cnf('global:extra_views');
+        foreach ($extras as $extra) {
+            if (file_exists($extra)) {
+                $paths[] = $extra;
+            }
+        }
+
         $view = new View(array_filter($paths), $debug, $cache_dir);
 
         $plugins = array_reverse(array_unique((array)$this->cnf('plugins:paths')));

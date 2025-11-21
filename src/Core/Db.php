@@ -131,7 +131,7 @@ class Db extends \Gsnowhawk\Common\Db
      *
      * @return mixed
      */
-    public function query($sql, $options = null, $bind = null)
+    public function query($sql, $options = [], $bind = null)
     {
         return parent::query(str_replace('table::', $this->prefix, $sql), $options, $bind);
     }
@@ -198,7 +198,7 @@ class Db extends \Gsnowhawk\Common\Db
      *
      * @return mixed
      */
-    public function delete($table, $statement = '', $options = null)
+    public function delete($table, $statement = '', $options = [])
     {
         return parent::delete(self::TABLE($table), $statement, $options);
     }
@@ -455,7 +455,7 @@ class Db extends \Gsnowhawk\Common\Db
      *
      * @return mixed
      */
-    public function nsmGetDecendants($columns, $parent, $children = null, $options = null, $extensions = '')
+    public function nsmGetDecendants($columns, $parent, $children = null, $options = [], $extensions = '')
     {
         return $this->getAll(self::nsmDecendantsSQL($columns, $parent, $children, $extensions), $options);
     }
@@ -497,7 +497,7 @@ class Db extends \Gsnowhawk\Common\Db
                         ) $filters";
     }
 
-    public function nsmGetChildren($columns, $parent, $midparent = null, $children = null, $filters = '', $options = null)
+    public function nsmGetChildren($columns, $parent, $midparent = null, $children = null, $filters = '', $options = [])
     {
         return $this->getAll(self::nsmChildrenSQL($columns, $parent, $midparent, $children, $filters), $options);
     }
@@ -580,7 +580,7 @@ class Db extends \Gsnowhawk\Common\Db
      *
      * @return mixed
      */
-    public function nsmGetParent($columns, $parent, $children = null, $options = null)
+    public function nsmGetParent($columns, $parent, $children = null, $options = [])
     {
         return $this->getAll(self::nsmParentSQL($columns, $parent, $children), $options, self::GET_RETURN_COLUMN);
     }
@@ -656,7 +656,7 @@ class Db extends \Gsnowhawk\Common\Db
                                                         AND child.lft < {$alias}.rgt)";
     }
 
-    public function nsmGetPosition($parent, $children = null, $options = null)
+    public function nsmGetPosition($parent, $children = null, $options = [])
     {
         return $this->getAll(self::nsmPositionSQL($parent, $children), $options, self::GET_RETURN_HASH);
     }
@@ -689,7 +689,7 @@ class Db extends \Gsnowhawk\Common\Db
                  GROUP BY parent.id";
     }
 
-    public function nsmGetCount($parent, $children = null, $options = null)
+    public function nsmGetCount($parent, $children = null, $options = [])
     {
         return $this->getAll(self::nsmCountSQL($parent, $children), $options, self::GET_RETURN_COLUMN);
     }
@@ -783,7 +783,7 @@ class Db extends \Gsnowhawk\Common\Db
      *
      * @return mixed
      */
-    public function copyRecord($cols, $dest, $source = '', $statement = '', $options = null)
+    public function copyRecord($cols, $dest, $source = '', $statement = '', $options = [])
     {
         if (empty($source)) {
             $source = $dest;
