@@ -2,6 +2,9 @@
 
 namespace Gsnowhawk\View\Markdown;
 
+use Twig\Compiler;
+use Twig\Node\Node AS TwigNode;
+
 /**
  * Represents a markdown node.
  *
@@ -10,14 +13,14 @@ namespace Gsnowhawk\View\Markdown;
  * @author Gunnar Lium <gunnar@aptoma.com>
  * @author Joris Berthelot <joris@berthelot.tel>
  */
-class Node extends \Twig_Node
+class Node extends TwigNode
 {
-    public function __construct(\Twig_Node $body, $lineno, $tag = 'markdown')
+    public function __construct(TwigNode $body, $lineno, $tag = 'markdown')
     {
         parent::__construct(['body' => $body], [], $lineno, $tag);
     }
 
-    public function compile(\Twig_Compiler $compiler)
+    public function compile(Compiler $compiler)
     {
         $compiler
             ->addDebugInfo($this)

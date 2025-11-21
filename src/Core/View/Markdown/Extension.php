@@ -2,7 +2,10 @@
 
 namespace Gsnowhawk\View\Markdown;
 
-class Extension extends \Twig_Extension
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
+
+class Extension extends AbstractExtension
 {
     private $engine;
 
@@ -14,7 +17,7 @@ class Extension extends \Twig_Extension
     public function getFilters()
     {
         return [
-            new \Twig_SimpleFilter(
+            new TwigFilter(
                 'markdown',
                 [$this, 'parseMarkdown'],
                 ['is_safe' => ['html']]
