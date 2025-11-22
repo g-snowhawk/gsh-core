@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of Gsnowhawk System.
  *
@@ -23,9 +24,9 @@ class Ja extends \Gsnowhawk\Common\Lang
     protected $FAILD_ERRORLOG_ROTATE = 'エラーログのローテーションに失敗しました';
     protected $FAILD_ACCESSLOG_ROTATE = 'アクセスログのローテーションに失敗しました';
 
-    const DB_DUMP_FAILED = 'データ生成に失敗しました';
-    const DB_NORMALIZE_FAILED = 'テーブルの最適化に失敗しました';
-    const DB_NORMALIZE_SUCCESS = 'テーブルの最適化が完了しました';
-    const EXEC_SQL_FAILED = 'SQLエラー';
-    const EXEC_SQL_SUCCESS = '%d個のSQLを実行しました';
+    public const DB_DUMP_FAILED = 'データ生成に失敗しました';
+    public const DB_NORMALIZE_FAILED = 'テーブルの最適化に失敗しました';
+    public const DB_NORMALIZE_SUCCESS = 'テーブルの最適化が完了しました';
+    public const EXEC_SQL_FAILED = 'SQLエラー';
+    public const EXEC_SQL_SUCCESS = '%d個のSQLを実行しました';
 }

@@ -3,7 +3,7 @@
 namespace Gsnowhawk\View\Markdown;
 
 use Twig\Compiler;
-use Twig\Node\Node AS TwigNode;
+use Twig\Node\Node as TwigNode;
 
 /**
  * Represents a markdown node.
