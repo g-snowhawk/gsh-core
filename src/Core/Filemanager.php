@@ -136,7 +136,6 @@ class Filemanager extends User
         $file = $this->rootdir . '/' . urldecode($path);
         if (!file_exists($file)) {
             throw new ErrorException("{$path} is no such file or directory", 404);
-            trigger_error("{$path} is no such file or directory", E_USER_ERROR);
         } elseif (is_dir($file)) {
             return false;
         }

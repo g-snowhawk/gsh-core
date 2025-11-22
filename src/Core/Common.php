@@ -123,7 +123,7 @@ abstract class Common
         }
         if (false === property_exists($this, $name)) {
             if ($this->app->cnf('global:debugmode') === '1') {
-                trigger_error("property `$name` does not exists.", E_USER_ERROR);
+                throw new ErrorException("property `$name` does not exists.");
             }
 
             return;

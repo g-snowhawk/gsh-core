@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of Gsnowhawk System.
  *
@@ -36,7 +37,7 @@ class Ja extends \Gsnowhawk\Common\Lang
     protected $ILLEGAL_OPERATION = '不正な操作が検出されました';
     protected $FAILED_SAVE = 'データ更新に失敗しました。';
 
-    const IGNORE_DOTFILE = 'ドットで始まるファイルは無視されます';
+    public const IGNORE_DOTFILE = 'ドットで始まるファイルは無視されます';
 
     /**
      * NOTICE.

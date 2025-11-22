@@ -11,6 +11,7 @@
 
 namespace Gsnowhawk;
 
+use ErrorException;
 use Gsnowhawk\Common\Environment as Env;
 use Gsnowhawk\Common\Http;
 
@@ -68,7 +69,7 @@ class App extends Base
         try {
             parent::__construct();
             putenv('GSH_LOCALE=' . ucfirst(strtolower($this->cnf('global:system_lang'))));
-        } catch (\ErrorException $e) {
+        } catch (ErrorException $e) {
             // Not yet system installed
             if ($e->getCode() == 90990 && preg_match("/Not found configurarion file\./", $e->getMessage())) {
                 $installer = new Install\Setup();

@@ -11,6 +11,7 @@
 
 namespace Gsnowhawk;
 
+use ErrorException;
 use Exception;
 use Twig\Extension\DebugExtension;
 use Twig\Extension\StringLoaderExtension;
@@ -43,7 +44,7 @@ class View implements ViewInterface
     /**
      * Template Engine.
      *
-     * @var Twig_Environment
+     * @var Twig\Environment
      */
     private $engine;
 
@@ -90,8 +91,8 @@ class View implements ViewInterface
             if (!file_exists($cache_dir)) {
                 try {
                     File::mkdir($cache_dir);
-                } catch (\ErrorException $e) {
-                    trigger_error("Can't create directory `$cache_dir'", E_USER_ERROR);
+                } catch (ErrorException $e) {
+                    throw new ErrorException("Can't create directory `$cache_dir'");
                 }
             }
         }
@@ -226,7 +227,7 @@ class View implements ViewInterface
     /**
      * Returns the paths to the templates.
      *
-     * @see Twig_Loader_Filesystem::getPaths()
+     * @see Twig\Loader\FilesystemLoader::getPaths()
      *
      * @return array
      */
@@ -290,7 +291,7 @@ class View implements ViewInterface
     /**
      * Adds a path where templates are stored.
      *
-     * @see Twig_Loader_Filesystem::addPath()
+     * @see Twig\Loader\FilesystemLoader::addPath()
      */
     public function addPath($path, $ns = FilesystemLoader::MAIN_NAMESPACE)
     {
@@ -309,7 +310,7 @@ class View implements ViewInterface
     /**
      * Prepends a path where templates are stored.
      *
-     * @see Twig_Loader_Filesystem::prependPath()
+     * @see Twig\Loader\FilesystemLoader::prependPath()
      */
     public function prependPath($path, $ns = FilesystemLoader::MAIN_NAMESPACE)
     {
