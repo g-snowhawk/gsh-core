@@ -117,7 +117,7 @@ class Db extends \Gsnowhawk\Common\Db
      *
      * @return mixed
      */
-    public function exec($sql, $options = null, $bind = null)
+    public function exec($sql, $options = [], $bind = null)
     {
         return parent::exec(str_replace('table::', $this->prefix, $sql), $options, $bind);
     }
@@ -347,7 +347,7 @@ class Db extends \Gsnowhawk\Common\Db
      *
      * @return int
      */
-    public function recordCount($sql = '', $options = null)
+    public function recordCount($sql = '', $options = [])
     {
         return parent::recordCount(str_replace('table::', $this->prefix, $sql), $options);
     }

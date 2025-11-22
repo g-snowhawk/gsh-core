@@ -11,6 +11,7 @@
 
 namespace Gsnowhawk;
 
+use ErrorException;
 use Gsnowhawk\Common\Text;
 
 /**
@@ -305,7 +306,7 @@ class Validator
                     try {
                         @touch($value.'/writabletest');
                         unlink($value.'/writabletest');
-                    } catch (\ErrorException $e) {
+                    } catch (ErrorException $e) {
                         $result = false;
                     }
                 } else {

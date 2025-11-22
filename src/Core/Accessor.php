@@ -11,6 +11,8 @@
 
 namespace Gsnowhawk;
 
+use ErrorException;
+
 /**
  * Common accessor methods.
  *
@@ -29,7 +31,7 @@ trait Accessor
     public function __get($name)
     {
         if ($name === 'app') {
-            throw new \ErrorException("Cannot access protected property $name");
+            throw new ErrorException("Cannot access protected property $name");
         }
         if (property_exists($this, $name)) {
             return $this->$name;
@@ -65,6 +67,6 @@ trait Accessor
      */
     public function __set($name, $value)
     {
-        trigger_error($name.' is no such property', E_USER_ERROR);
+        throw new ErrorException($name.' is no such property');
     }
 }

@@ -132,7 +132,7 @@ class Setup
             false === property_exists(__CLASS__, $name)
         ) {
             if ((int)DEBUG_MODE > 0) {
-                trigger_error("property `$name` does not exists.", E_USER_ERROR);
+                throw new ErrorException("property `$name` does not exists.");
             }
 
             return;

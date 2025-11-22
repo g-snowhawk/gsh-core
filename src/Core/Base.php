@@ -136,7 +136,7 @@ abstract class Base
             $this->createDbInstance();
             // Open database
             if (!$this->db->open()) {
-                trigger_error('Could not open database connection. ', E_USER_ERROR);
+                throw new ErrorException('Could not open database connection.');
             }
         }
 
@@ -192,7 +192,7 @@ abstract class Base
             false === property_exists(__CLASS__, $name)
         ) {
             if ((int)DEBUG_MODE > 0) {
-                trigger_error("property `$name` does not exists.", E_USER_ERROR);
+                throw new ErrorException("property `$name` does not exists.");
             }
 
             return;
@@ -467,7 +467,7 @@ abstract class Base
             $ref = new ReflectionClass($package);
             $method = $ref->getMethod($unit['function']);
             if (!preg_match('/\*\s+@cli available/', $method->getDocComment())) {
-                trigger_error('Illegal operation', E_USER_ERROR);
+                throw new ErrorException('Illegal operation');
             }
         }
 
@@ -530,7 +530,7 @@ abstract class Base
             && false === is_a($package, 'Gsnowhawk\\Filemanager', true)
             && false === is_a($package, 'Gsnowhawk\\Plugin', true)
         ) {
-            trigger_error("System Error: Class `$package' is an invalid package.", E_USER_ERROR);
+            throw new ErrorException("System Error: Class `$package' is an invalid package.");
         }
 
         return $unit;
@@ -692,11 +692,11 @@ abstract class Base
      *
      * @return void
      */
-    public function response($mode, array $extend_args = null)
+    public function response($mode, array $extend_args = [])
     {
         list($instance, $function, $arguments) = $this->instance($mode);
 
-        if (!is_null($extend_args)) {
+        if (!empty($extend_args)) {
             $arguments = array_merge((array)$arguments, $extend_args);
         }
 
@@ -713,10 +713,10 @@ abstract class Base
             if ($e->getCode() === 404) {
                 self::displayError(clone $this->view, $e, '404.tpl');
             } else {
-                trigger_error($e->getMessage(), E_USER_ERROR);
+                throw new ErrorException($e->getMessage());
             }
         } catch (LogicException $e) {
-            trigger_error($e->getMessage(), E_USER_ERROR);
+            throw new ErrorException($e->getMessage());
         } catch (Exception $e) {
             self::displayError(clone $this->view, $e, 'systemerror.tpl');
         }

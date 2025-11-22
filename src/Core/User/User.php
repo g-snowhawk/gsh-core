@@ -11,6 +11,7 @@
 
 namespace Gsnowhawk;
 
+use ErrorException;
 use Gsnowhawk\Common\Lang;
 use Gsnowhawk\Common\Mail;
 use Gsnowhawk\Common\Security;
@@ -799,7 +800,7 @@ class User extends Common
     protected function resetUserByCli($uname)
     {
         if (php_sapi_name() !== 'cli') {
-            trigger_error('Bad Requiest!', E_USER_ERROR);
+            throw new ErrorException('Bad Requiest!');
         }
         $this->session->param('uname', $uname);
         $this->setUserInfo();

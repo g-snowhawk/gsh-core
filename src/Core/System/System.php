@@ -11,6 +11,7 @@
 
 namespace Gsnowhawk;
 
+use ErrorException;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 use FilesystemIterator;
@@ -54,14 +55,14 @@ class System extends User
         }
         $install_log = "{$log_dir}/install.log";
         if (file_exists($install_log) && false !== $fh = fopen($install_log, 'r')) {
-            while (false !== $unit = fgetcsv($fh, 0, "\t")) {
+            while (false !== $unit = fgetcsv($fh, 0, "\t", "\"", "\\")) {
                 $this->checksum[$unit[0]] = ['version' => $unit[1], 'md5' => $unit[2]];
             }
         }
 
         $plugins_log = $this->app->cnf('global:log_dir') . '/plugins.log';
         if (file_exists($plugins_log) && false !== $fh = fopen($plugins_log, 'r')) {
-            while (false !== $unit = fgetcsv($fh, 0, "\t")) {
+            while (false !== $unit = fgetcsv($fh, 0, "\t", "\"", "\\")) {
                 $this->checksum_plugins[$unit[0]] = ['version' => $unit[1], 'md5' => $unit[2]];
             }
         }
@@ -118,7 +119,7 @@ class System extends User
             $class = "\\$package\\setup";
 
             return $class::VERSION;
-        } catch (\ErrorException $e) {
+        } catch (ErrorException $e) {
             // Noop
         }
 

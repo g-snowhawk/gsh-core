@@ -11,6 +11,7 @@
 
 namespace Gsnowhawk;
 
+use ErrorException;
 use Exception;
 use Twig\Extension\DebugExtension;
 use Twig\Extension\StringLoaderExtension;
@@ -90,8 +91,8 @@ class View implements ViewInterface
             if (!file_exists($cache_dir)) {
                 try {
                     File::mkdir($cache_dir);
-                } catch (\ErrorException $e) {
-                    trigger_error("Can't create directory `$cache_dir'", E_USER_ERROR);
+                } catch (ErrorException $e) {
+                    throw new ErrorException("Can't create directory `$cache_dir'");
                 }
             }
         }
