@@ -501,7 +501,8 @@ abstract class Common
     protected function redirect($mode, string $type = 'redirect', ?array $args = null)
     {
         if ($type === 'redirect') {
-            $u = (filter_var($mode, FILTER_VALIDATE_URL)
+            $u = (
+                filter_var($mode, FILTER_VALIDATE_URL)
                 || filter_var("http://localhost{$mode}", FILTER_VALIDATE_URL)
                 || preg_match('/\?.+$/', $mode)
             ) ? parse_url($mode) : parse_url(sprintf('?mode=%s', $mode));

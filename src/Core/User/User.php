@@ -263,7 +263,7 @@ class User extends Common
                     $this->app->syslog($syslog_format, [$post['id']]);
 
                     if (!empty($save['upass'])) {
-                        $format = ($this->request->param('profile') === '1') ? "Change password" : "Change password `%d'";
+                        $format = ($this->request->param('profile') === '1') ? 'Change password' : "Change password `%d'";
                         $this->app->syslog($format, [$post['id']]);
                     }
 
