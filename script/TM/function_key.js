@@ -98,7 +98,7 @@ TM_FunctionKey.prototype.sync = function(event) {
 };
 
 TM_FunctionKey.prototype.link = function(element) {
-    TM.setCookie('script_referer', location.href);
+    setcookie('script_referer', location.href);
 };
 
 TM_FunctionKey.prototype.listener = function(event) {

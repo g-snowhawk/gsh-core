@@ -144,7 +144,13 @@ class Receive extends Response
     public function logRotate()
     {
         $error_log = ERROR_LOG_DESTINATION;
-        $access_log = dirname($error_log).'/access.log';
+
+        $logfile = $this->cnf('global:log_file_name') ?? 'access.log';
+        if (empty($logfile)) {
+            throw new ErrorException('Logfile name is empty', 0, E_USER_ERROR, __FILE__, __LINE__);
+        }
+
+        $access_log = dirname($error_log).'/'.$logfile;
         $ext = date('YmdHis');
 
         if ($this->request->POST('errorlog_rotate') === '1' && file_exists($error_log)) {

@@ -16,6 +16,7 @@ CREATE TABLE `table::user` (
   `division` varchar(255) DEFAULT NULL,
   `fullname` varchar(255) DEFAULT NULL,
   `fullname_rubi` varchar(255) DEFAULT NULL,
+  `nickname` varchar(128) DEFAULT NULL,
   `url` varchar(255) DEFAULT NULL,
   `zip` varchar(8) DEFAULT NULL,
   `state` varchar(50) DEFAULT NULL,
@@ -42,6 +43,7 @@ CREATE TABLE `table::user` (
   `rgt` int unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uname` (`uname`),
+  UNIQUE KEY `nickname` (`nickname`),
   UNIQUE KEY `email` (`email`,`admin`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -72,6 +74,20 @@ CREATE TABLE `table::permission` (
   PRIMARY KEY (`userkey`,`filter1`,`filter2`,`application`,`class`,`type`),
   KEY `table::permission_ibfk_1` (`userkey`),
   CONSTRAINT `table::permission_ibfk_1` FOREIGN KEY (`userkey`) REFERENCES `table::user` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+DROP TABLE IF EXISTS `table::log`;
+CREATE TABLE `table::log` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `logtime` datetime NOT NULL,
+  `host` varchar(128) DEFAULT NULL,
+  `remote_user` varchar(128) DEFAULT '-',
+  `remote_addr` varchar(40) DEFAULT NULL,
+  `summary` text,
+  `user_agent` text,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------

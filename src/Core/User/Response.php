@@ -138,6 +138,10 @@ class Response extends Unauth
             $post['profile'] = 1;
         }
 
+        if (defined('PASSWORD_POLICY')) {
+            $this->view->bind('password_policy', PASSWORD_POLICY);
+        }
+
         $this->view->bind('post', $post);
 
         $perms = [];
@@ -204,7 +208,8 @@ class Response extends Unauth
 
         $this->app->execPlugin('afterSwitchUser');
 
-        Http::redirect($this->app->systemURI()."?mode=$mode");
+        $redirect = static::urlMapping("?mode={$mode}");
+        Http::redirect($this->app->systemURI().$redirect);
     }
 
     /**
@@ -232,7 +237,8 @@ class Response extends Unauth
             $this->clearUserInfo();
         }
 
-        Http::redirect($this->app->systemURI().'?mode=user.response');
+        $redirect = static::urlMapping('?mode=user.response');
+        Http::redirect($this->app->systemURI().$redirect);
     }
 
     /**

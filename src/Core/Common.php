@@ -468,9 +468,7 @@ abstract class Common
             }
 
             $ret = call_user_func_array($response[0], (array)$response[1]);
-            $result['response'] = (is_array($ret))
-                ? $ret
-                : ['type' => 'replace', 'source' => $ret];
+            $result['response'] = (is_array($ret)) ? $ret : ['type' => 'replace', 'source' => $ret];
 
             $callback = $this->request->param('callback');
             if (!empty($callback)) {
@@ -500,19 +498,47 @@ abstract class Common
         call_user_func_array($response[0], (array)$response[1]);
     }
 
-    protected function redirect($mode, $type = 'redirect')
+    protected function redirect($mode, string $type = 'redirect', ?array $args = null)
     {
         if ($type === 'redirect') {
-            $mode = preg_replace_callback(
-                '/%5C(%[0-9A-F]{2})/',
-                function ($match) {
-                    return urldecode($match[1]);
-                },
-                filter_var($mode, FILTER_SANITIZE_ENCODED, FILTER_FLAG_STRIP_HIGH)
-            );
-            $url = $this->app->systemURI()."?mode=$mode";
+            $u = (filter_var($mode, FILTER_VALIDATE_URL)
+                || filter_var("http://localhost{$mode}", FILTER_VALIDATE_URL)
+                || preg_match('/\?.+$/', $mode)
+            ) ? parse_url($mode) : parse_url(sprintf('?mode=%s', $mode));
+            $str = (!empty($u['scheme'])) ? $u['scheme'].'://' : '';
+            if (!empty($u['user'])) {
+                $str .= $u['user'];
+                if (!empty($u['pass'])) {
+                    $str .= ':'.$u['pass'];
+                }
+                $str .= '@';
+            }
+            $str .= $u['host'] ?? '';
+            $str .= (!empty($u['port'])) ? ':'.$u['port'] : '';
+            $str .= $u['path'] ?? '';
+            if (!empty($u['query'])) {
+                $str .= '?';
+                parse_str($u['query'], $params);
+                foreach ($params as $k => $v) {
+                    $str .= $k.'='.preg_replace('/%25([ds])/', '%$1', urlencode($v));
+                }
+            }
+            $str .= (!empty($u['fragment'])) ? '#'.$u['fragment'] : '';
+
+            $redirect = static::urlMapping($str);
+            if (isset($args)) {
+                array_unshift($args, $redirect);
+                $redirect = call_user_func_array('sprintf', $args);
+            }
+
+            if (filter_var($mode, FILTER_VALIDATE_URL)) {
+                $url = $redirect;
+            } else {
+                $sysurl = $this->app->systemURI();
+                $url = $sysurl.str_replace($sysurl, '', $redirect);
+            }
         } else {
-            $url = $mode;
+            $url = static::urlMapping($mode);
         }
 
         if (!$this->isAjax) {
@@ -576,7 +602,7 @@ abstract class Common
         return file_put_contents($this->pollingPath(), $data);
     }
 
-    protected function echoPolling(array $response = null)
+    protected function echoPolling(?array $response = null)
     {
         $polling_file = $this->pollingPath();
 
@@ -649,9 +675,15 @@ abstract class Common
             $class = $item['class'];
             $class = '\\'.ltrim($class, '\\');
             if (method_exists($class, 'extendedTemplatePath')) {
-                $path = $class::extendedTemplatePath(Http::getURI(), $this);
-                if (!empty($path)) {
-                    $this->view->prependPath($path);
+                $paths = $class::extendedTemplatePath(Http::getURI(), $this);
+                // backward compatibility
+                if (!is_array($paths)) {
+                    $paths = [$paths];
+                }
+                foreach ($paths as $path) {
+                    if (!empty($path)) {
+                        $this->view->prependPath($path);
+                    }
                 }
             }
         }
@@ -738,5 +770,10 @@ abstract class Common
         if (!$is_empty && !$this->db->exists($table, $statement, $options)) {
             trigger_error('Irrigal operation', E_USER_WARNING);
         }
+    }
+
+    protected static function urlMapping(string $format): string
+    {
+        return Base::urlMapping($format);
     }
 }

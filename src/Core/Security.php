@@ -32,7 +32,7 @@ class Security extends \Gsnowhawk\Common\Security
      * @param string $source
      * @param Gsnowhawk\Common\Db  $db
      */
-    public function __construct($source, Db $db = null, $password_algo = 'sha1')
+    public function __construct($source, ?Db $db = null, $password_algo = 'sha1')
     {
         foreach (debug_backtrace() as $trace) {
             if (isset($trace['object']) && $trace['object'] instanceof App) {
@@ -58,7 +58,7 @@ class Security extends \Gsnowhawk\Common\Security
     {
         $authorized = parent::authentication($uname, $upass, $secret, $expire);
 
-        $results = $this->app->execPlugin('afterAuthentication', $uname, $authorized);
+        $results = $this->app->execPlugin('afterAuthentication', $uname, [&$authorized]);
         foreach ($results as $result) {
             if ($result === false) {
                 $authorized = false;

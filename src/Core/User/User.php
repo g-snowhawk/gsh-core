@@ -69,6 +69,8 @@ class User extends Common
         if (is_null($this->userinfo)) {
             $this->setUserInfo();
         }
+
+        $this->app->logger->setApp($this);
     }
 
     /**
@@ -86,6 +88,7 @@ class User extends Common
         if (!empty($userinfo = $this->db->get('*', 'user', 'uname = ?', [$uname]))) {
             $this->uid = $userinfo['id'];
             $fields = $this->db->getFields('user', true);
+            $userinfo['alias_name'] = $this->session->param('alias');
             foreach ($userinfo as $key => $value) {
                 if (is_null($value)) {
                     continue;
@@ -115,6 +118,9 @@ class User extends Common
      */
     protected function save()
     {
+        $args = func_get_args();
+        $log_keyword = (isset($args[0])) ? $args[0] : 'account';
+
         if ($this->request->param('profile') === '1') {
             $this->request->post('id', $this->uid);
         } else {
@@ -148,7 +154,7 @@ class User extends Common
             $valid[] = ['vl_uname', 'validate_uname', 'rfc822', 2];
         }
 
-        $password = [$post['upass'], $post['retype']];
+        $password = [$post['upass'], $post['retype'] ?? ''];
         $this->request->post('password', $password);
         $valid[] = ['vl_upass', 'password', 'retype'];
 
@@ -201,6 +207,14 @@ class User extends Common
             $save['admin'] = $post['admin'] ?? '0';
         }
 
+        $plugin_result = $this->app->execPlugin('beforeSave', $post['id'], [&$save]);
+        foreach ($plugin_result as $plugin_count) {
+            if (false === $plugin_count) {
+                return false;
+            }
+        }
+
+        $syslog_format = "Save the {$log_keyword} `%d'";
         if (empty($post['id'])) {
             $parent_rgt = $this->db->get('rgt', 'user', 'id = ?', [$this->uid]);
 
@@ -217,24 +231,24 @@ class User extends Common
             ) {
                 $post['id'] = $this->db->lastInsertId(null, 'id');
             }
+            $syslog_format = "Save new {$log_keyword} `%d'";
         } else {
             $result = $this->db->update($table, $save, 'id = ?', [$post['id']], $raw);
+            if ($this->request->param('profile') === '1') {
+                $syslog_format = "Change {$log_keyword} profile";
+            }
         }
         if ($result !== false) {
             $modified = ($result > 0) ? $this->db->modified($table, 'id = ?', [$post['id']]) : true;
             if ($modified) {
-                if ($this->request->param('profile') !== '1'
-                    && false === $this->updatePermission($post)
-                ) {
+                if ($this->request->param('profile') !== '1' && false === $this->updatePermission($post)) {
                     $result = false;
                 }
             } else {
                 $result = false;
             }
 
-            if ($this->request->param('profile') === '1'
-                && false === $this->removeAlias($post)
-            ) {
+            if ($this->request->param('profile') === '1' && false === $this->removeAlias($post)) {
                 $result = false;
             }
 
@@ -245,7 +259,16 @@ class User extends Common
                     $this->session->param('reissued_password', $post['upass']);
                 }
 
-                return $this->db->commit();
+                if ($this->db->commit()) {
+                    $this->app->syslog($syslog_format, [$post['id']]);
+
+                    if (!empty($save['upass'])) {
+                        $format = ($this->request->param('profile') === '1') ? "Change password" : "Change password `%d'";
+                        $this->app->syslog($format, [$post['id']]);
+                    }
+
+                    return true;
+                }
             }
         }
         $error = $this->db->error();
@@ -267,6 +290,9 @@ class User extends Common
      */
     protected function remove()
     {
+        $args = func_get_args();
+        $log_keyword = (isset($args[0])) ? $args[0] : 'account';
+
         $result = 0;
         $id = $this->request->param('delete');
         if (false === $this->isParent($id)) {
@@ -288,7 +314,11 @@ class User extends Common
              && false !== ($result = $this->db->delete('user', '`alias` = ?', [$id]))
              && false !== ($result = $this->db->nsmCleanup('user', '`lft` IS NOT NULL'))
         ) {
-            return $this->db->commit();
+            if ($this->db->commit()) {
+                $this->app->syslog("Remove {$log_keyword} `%d'", [$id]);
+
+                return true;
+            }
         }
         trigger_error($this->db->error());
         $this->db->rollback();
@@ -654,6 +684,7 @@ class User extends Common
             }
         }
 
+        $syslog_format = "Save the alias `%d'";
         if (empty($post['id'])) {
             $save['alias'] = $this->uid;
             $save['lft'] = null;
@@ -670,6 +701,7 @@ class User extends Common
             if (false !== $result = $this->db->insert($table, $save, $raw)) {
                 $post['id'] = $this->db->lastInsertId(null, 'id');
             }
+            $syslog_format = "Save new alias `%d'";
         } else {
             $result = $this->db->update($table, $save, 'id = ?', [$post['id']], $raw);
         }
@@ -681,7 +713,11 @@ class User extends Common
                 $result = false;
             }
             if ($result !== false) {
-                return $this->db->commit();
+                if ($this->db->commit()) {
+                    $this->app->syslog($syslog_format, [$post['id']]);
+
+                    return true;
+                }
             }
         }
         $error = $this->db->error();
@@ -711,9 +747,10 @@ class User extends Common
             if ($value !== 'on') {
                 continue;
             }
-            if (false === $this->db->delete('user', 'id=?', [$key])) {
+            if (false === $this->db->delete('user', 'id = ?', [$key])) {
                 return false;
             }
+            $this->app->syslog("Remove alias `%d'", [$key]);
         }
 
         return true;

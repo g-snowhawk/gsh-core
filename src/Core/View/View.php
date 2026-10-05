@@ -19,6 +19,7 @@ use Twig\Loader\ArrayLoader;
 use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
 use cebe\markdown\GithubMarkdown;
+use Gsnowhawk\Common\Environment as Env;
 use Gsnowhawk\Common\File;
 use Gsnowhawk\Common\Html\Format;
 use Gsnowhawk\Common\Http;
@@ -40,6 +41,13 @@ class View implements ViewInterface
      * Template extention
      */
     public const TEMPLATE_EXTENTION = '.tpl';
+
+    /**
+     * Clone paths
+     *
+     * @var bool
+     */
+    private $clone_paths = false;
 
     /**
      * Template Engine.
@@ -71,6 +79,13 @@ class View implements ViewInterface
     private $loader;
     private $context;
     private $rendering = false;
+
+    /**
+     * System logger
+     *
+     * @var object
+     */
+    private $logger;
 
     /**
      * Object Constructor.
@@ -106,12 +121,21 @@ class View implements ViewInterface
     public function __clone()
     {
         $globals = $this->param();
+
+        $paths = ($this->clone_paths) ? $this->getPaths() : null;
+
         $this->resetEngine();
+
         if (is_array($globals)) {
             foreach ($globals as $key => $value) {
                 $this->bind($key, $value);
             }
         }
+
+        if (!empty($paths)) {
+            $this->setPaths($paths);
+        }
+
         $this->rendering = false;
     }
 
@@ -123,6 +147,8 @@ class View implements ViewInterface
         if ($this->context['debug']) {
             $this->engine->addExtension(new DebugExtension());
         }
+
+        $this->setClonePaths(false);
 
         // Markdown Extension
         $markdown = new GithubMarkdown();
@@ -217,9 +243,20 @@ class View implements ViewInterface
 
         header_remove('x-powered-by');
 
+        if (!empty($_SESSION['uname'])) {
+            header('X-User-Nickname: '.$_SESSION['uname']);
+        }
+
         echo $source;
 
         if ((int)DEBUG_MODE !== 2) {
+            if (is_object($this->logger)) {
+                $request_uri = Env::server('request_uri');
+                if (defined('LOG_URL_DECODE') && LOG_URL_DECODE === true) {
+                    $request_uri = urldecode($request_uri);
+                }
+                $this->logger->syslog('Open %s', [$request_uri]);
+            }
             exit;
         }
     }
@@ -399,5 +436,15 @@ class View implements ViewInterface
     public function inRendering(): bool
     {
         return $this->rendering;
+    }
+
+    public function setLogger(Logger $logger): void
+    {
+        $this->logger = $logger;
+    }
+
+    public function setClonePaths(bool $req)
+    {
+        $this->clone_paths = $req;
     }
 }

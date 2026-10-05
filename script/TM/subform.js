@@ -23,6 +23,7 @@ function Subform() {
     this.events = {
         opened: [],
         closed: [],
+        readyForm: [],
         initedForm: []
     };
     TM.initModule(this.init, this, 'interactive');
@@ -50,6 +51,9 @@ Subform.prototype.addListener = function(eventType, func) {
 Subform.prototype.show = function(container) {
     var instance = TM.subform;
     container.addEventListener('transitionend', instance.listener, false);
+    container.classList.remove(instance.cnTransition);
+    container.offsetWidth;
+    container.offsetHeight;
     container.classList.add(instance.cnTransition);
     container.style[instance.position] = '0';
 };
@@ -103,11 +107,26 @@ Subform.prototype.setListenerButtons = function() {
     }
 };
 
+Subform.prototype.execScript = function(container) {
+    var scripts = container.querySelectorAll('script');
+    scripts.forEach(origin => {
+        if (origin.src) {
+            const clone = document.createElement('script');
+            clone.src = origin.src;
+            clone.classList.add('append-by-subform');
+            document.body.appendChild(clone);
+            origin.parentNode.removeChild(origin);
+        }
+    });
+}
+
 Subform.prototype.setListenerForms = function(container) {
     var forms = container.getElementsByTagName('form');
     for (i = 0, max = forms.length; i < max; i++) {
         forms[i].addEventListener('submit', this.listener, false);
     }
+
+    this.execScript(container);
 };
 
 Subform.prototype.initForm = function(source) {
@@ -127,6 +146,8 @@ Subform.prototype.initForm = function(source) {
 };
 
 Subform.prototype.create = function(json) {
+    var instance = TM.subform;
+
     var sealed = document.getElementById(this.sealedID);
     if (this.initForm(json.response)) {
         return;
@@ -163,6 +184,11 @@ Subform.prototype.create = function(json) {
 
     this.setListenerForms(container);
 
+    var eventType = 'readyForm';
+    for (var i = 0; i < instance.events[eventType].length; i++) {
+        instance.events[eventType][i].apply(instance, [{ type: eventType }]);
+    }
+
     this.subFormSize = (this.position !== 'bottom') ? container.offsetWidth : container.offsetHeight;
 
     container.style[this.position] = '-' + this.subFormSize + 'px';
@@ -173,27 +199,37 @@ Subform.prototype.close = function(container) {
     container.style[this.position] = '-' + this.subFormSize + 'px';
     var sealed = document.getElementById(this.sealedID);
     sealed.classList.add('fadeout');
+
+    var script = document.querySelector('script.append-by-subform');
+    while (script) {
+        script.parentNode.removeChild(script);
+        script = document.querySelector('script.append-by-subform');
+    }
 };
 
 Subform.prototype.open = function(element) {
     var instance = TM.subform;
 
     var action = element.pathname;
+    var method = (element.dataset.requestMethod || 'POST').toUpperCase();
 
-    var query = element.search.substr(1);
-    var queries = query.split('&');
-    var data = new FormData();
-    for (var i = 0; i < queries.length; i++) {
-        var pair = queries[i].split('=');
-        data.append(pair[0], pair[1]);
+    var data = null;
+    if (method === 'POST') {
+        var query = element.search.substr(1);
+        var queries = query.split('&');
+        data = new FormData();
+        for (var i = 0; i < queries.length; i++) {
+            var pair = queries[i].split('=');
+            data.append(pair[0], pair[1]);
+        }
+
+        var stub = document.querySelector('[name=stub]');
+        data.append('stub', stub.value);
+        data.append('script_referer', location.href);
+        data.append('request_type', 'response-subform');
     }
 
-    var stub = document.querySelector('[name=stub]');
-    data.append('stub', stub.value);
-    data.append('script_referer', location.href);
-    data.append('request_type', 'response-subform');
-
-    TM.xhr.init('POST', action, true, function(event){
+    TM.xhr.init(method, action, true, function(event){
         if(this.status == 200){
             try {
                 var json = JSON.parse(this.responseText);

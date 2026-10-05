@@ -75,6 +75,7 @@ class App extends Base
                 $installer = new Install\Setup();
                 $installer->install();
             }
+            trigger_error($e->getMessage());
         }
 
         // Set locale to UTF-8
@@ -128,10 +129,10 @@ class App extends Base
         $secure = (Env::server('https') === 'on' || Env::server('http_x_forwarded_proto') === 'https');
 
         // Signout
-        if (Env::server('query_string') === 'logout' ||
-            ($this->request->method === 'post' && $this->request->POST('stub') !== $this->session->param('ticket'))
+        if ($this->request->isset('logout')
+            || ($this->request->method === 'post' && $this->request->POST('stub') !== $this->session->param('ticket'))
         ) {
-            $this->logger->log('Signout');
+            $this->syslog('Signout');
             $this->setcookie('limit', '', time() - 3600, null, null, $secure);
             $this->session->destroy();
             Http::redirect($this->reload());
