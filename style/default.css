@@ -24,7 +24,7 @@ body {
 textarea, select {
   outline: none;
 }
-input:not([type=checkbox]):not([type=radio]) {
+input:not([type=checkbox],[type=radio]) {
   outline: none;
 }
 main {
@@ -39,7 +39,7 @@ template {
   -webkit-user-select: none;
   user-select: none;
 }
-input:not([type=button]):not([type=checkbox]):not([type=radio]):not([type=reset]):not([type=submit]),
+input:not([type=button],[type=checkbox],[type=radio],[type=reset],[type=submit]),
 textarea {
   -ms-user-select: text;
   -moz-user-select: text;
@@ -111,6 +111,24 @@ input[type="submit"]:disabled {
   color: #999;
 }
 
+button.unveil-password {
+  align-self: center;
+  background-color: transparent;
+  border: 0 none transparent;
+  border-radius: 0;
+  color: #369;
+  cursor: pointer;
+  font-size: 0.7rem;
+  line-height: 1;
+  margin: 0;
+  min-width: initial;
+  padding: 0 0.5em;
+  width: auto;
+}
+button.unveil-password:hover {
+  color: #36c;
+}
+
 /**
  * Textbox style
  */
@@ -142,6 +160,8 @@ input[type="password"],
 input[type="text"] {
   line-height: 1;
 }
+
+/*
 input.sametext:focus,
 input[type="datetime-local"]:focus,
 input[type="date"]:focus,
@@ -153,6 +173,7 @@ select:focus,
 textarea:focus {
   border-color: #999;
 }
+*/
 input.sourcecode, textarea.sourcecode {
   font-family: 'Courier New', Courier, monospace;
   font-size: .75rem;
@@ -228,6 +249,7 @@ a.small-button:hover {
   padding: .5rem;
   pointer-events: none;
   position: absolute;
+  z-index: 200;
 }
 *[data-tips]:after ,
 *[data-tips]:before {
@@ -850,6 +872,19 @@ a.small-button:hover {
   margin: 12px auto;
   position: relative;
 }
+.fieldset input[readonly],
+.fieldset textarea[readonly] {
+  color: #99c;
+}
+.fieldset input.sametext:focus,
+.fieldset select:focus,
+.fieldset textarea:focus,
+.fieldset input:not([type=button],[type=checkbox],[type=radio],[type=reset],[type=submit]):focus,
+.fieldset .input:has(:focus),
+.fieldset:has(:focus) .legend,
+.fieldset:has(:focus) label {
+  border-color: #999;
+}
 .fieldset div.legend,
 .fieldset label {
   background: #fff;
@@ -1266,18 +1301,22 @@ div.input.flex input.grow-1 {
   border: 1px solid #f99;
 }
 .error {
-  margin: 12px auto -12px;
+  line-height: 1;
+  margin: 12px auto -6px 0.7rem;
   max-width: 768px;
+  text-indent: -0.7rem;
 }
 .error i {
   font-size: .7rem;
-  line-height: 1;
   color: #f00;
 }
 .error i:before {
-  content: '▼ ';
+  content: '▼';
   font-style: normal;
-  font-size: .5rem;
+  font-size: .7rem;
+}
+.error i.ok {
+  color: #ccc;
 }
 
 /**
@@ -1480,6 +1519,11 @@ section.relational-list li > div.line a {
   line-height: 1;
   padding: 12px 8px;
   text-decoration: none;
+}
+section.relational-list li > div.line a.disabled {
+  color: #ccc;
+  cursor: normal;
+  pointer-events: none;
 }
 section.relational-list li > div.line a > span {
   flex-grow: 1;
@@ -1755,6 +1799,30 @@ html.filemanager .explorer-list .footer-controls #file-selector label input {
 #user-edit .permission td.toggle label input[type=radio]:checked + span {
   color: #000;
 }
+#user-edit #update-password .fieldset .input,
+#user-edit #update-password .fieldset input:is([type=password],[type=text]) {
+  max-width: 200px;
+}
+#user-edit #update-password .fieldset input:is([type=password],[type=text]).ok,
+#user-edit #update-password .fieldset:has(input:is([type=password],[type=text]).ok) label {
+  background-color: #cfc;
+}
+#user-edit #update-password .fieldset input:is([type=password],[type=text]).ng,
+#user-edit #update-password .fieldset:has(input:is([type=password],[type=text]).ng) label {
+  background-color: #ffc;
+}
+#user-edit #update-password .fieldset input:is([type=password],[type=text]).bad,
+#user-edit #update-password .fieldset:has(input:is([type=password],[type=text]).bad) label {
+  background-color: #fcc;
+}
+#user-edit #update-password .fieldset input:is([type=password],[type=text]):disabled,
+#user-edit #update-password .fieldset:has(input:is([type=password],[type=text]):disabled) label {
+  background-color: #dfdfdf;
+}
+#user-edit #update-password .fieldset input:is([type=password],[type=text]):disabled::placeholder {
+  color: transparent;
+}
+
 #global-permission {
   margin-top: 24px;
 }

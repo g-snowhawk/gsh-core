@@ -126,7 +126,22 @@ abstract class Base
             define('ERROR_LOG_DESTINATION', $this->cnf('global:log_dir').'/error.log');
         }
 
-        $this->logger = new Logger(dirname(ERROR_LOG_DESTINATION), $this);
+        if (function_exists('opcache_invalidate') && filter_var(ini_get('opcache.enable'), FILTER_VALIDATE_BOOLEAN)) {
+            $clearfile = $this->cnf('global:data_dir').'/clear_opcache';
+            if (file_exists($clearfile)) {
+                opcache_reset();
+                @unlink($clearfile);
+            }
+        }
+
+        $log_file = $this->cnf('global:log_file_name') ?? 'access.log';
+        $log_table = $this->cnf('global:log_table_name');
+
+        if (!empty($this->cnf('global:dictionary_path'))) {
+            define('DICTIONARY_PATH', $this->cnf('global:dictionary_path'));
+        }
+
+        $this->logger = new Logger(dirname(ERROR_LOG_DESTINATION), $this, $log_file, $log_table);
         $this->env = new Env();
         $this->request = new Form();
 
@@ -177,6 +192,20 @@ abstract class Base
         $this->session->clear('application_name');
         $this->view = $this->createView();
         $this->session->param('application_name', $current_appname);
+
+        if (defined('URL_MAPPING_FILE') && is_file(URL_MAPPING_FILE)) {
+            $json = json_decode(file_get_contents(URL_MAPPING_FILE), true, 2, JSON_UNESCAPED_UNICODE);
+            if (is_null($json)) {
+                throw new ErrorException('URL mapping file is broken');
+            }
+            define('URL_MAPPING', $json);
+        }
+
+        // Password policy
+        $pw_policy = $this->cnf('security:password_policy');
+        if (!empty($pw_policy)) {
+            define('PASSWORD_POLICY', $pw_policy);
+        }
     }
 
     /**
@@ -247,7 +276,6 @@ abstract class Base
         }
 
         $configuration = [
-            implode('', ['<', '?php']),
             ';',
             '; System configuration',
             '; modify : ' . date('Y-m-d h:i:s'),
@@ -296,10 +324,9 @@ abstract class Base
         $ukeep = $this->request->POST('ukeep');
 
         $err = ['vl_empty' => 0, 'vl_mismatch' => 0, 'vl_nocookie' => 0];
-        $auth = new Security($authTable, $this->db, $this->cnf('global:password_encrypt_algorithm'));
 
         $secret = '';
-        $columns = (is_null($this->db)) ? [] : $this->db->getFields('user', false, false, "like 'pw_%'");
+        $columns = (is_null($this->db)) ? [] : $this->db->getFields($authTable, false, false, "like 'pw_%'");
         $expire = (in_array('pw_expire', $columns)) ? 'pw_expire' : null;
 
         if ($this->session->param('authenticationFrequency') === 'everytime') {
@@ -308,6 +335,15 @@ abstract class Base
                 $secret = $this->session->param('secret');
             }
         }
+
+        $algo = $this->cnf('global:password_encrypt_algorithm');
+        if (in_array('pw_algo', $columns)) {
+            $private_algo = $this->db->get('pw_algo', 'user', 'uname = ?', [$uname]);
+            if (!empty($private_algo)) {
+                $algo = $private_algo;
+            }
+        }
+        $auth = new Security($authTable, $this->db, $algo);
 
         if (false === $auth->authentication($uname, $upass, $secret, $expire)) {
             if (!is_null($this->request->POST('authEnabler'))) {
@@ -395,7 +431,7 @@ abstract class Base
         $this->session->param('uname', $uname);
         $this->session->param('secret', $secret);
 
-        $this->logger->log('Signin');
+        $this->syslog('Signin');
 
         return $this->reload();
     }
@@ -700,6 +736,7 @@ abstract class Base
             $arguments = array_merge((array)$arguments, $extend_args);
         }
 
+        $this->view->setClonePaths(true);
         try {
             $instance->init();
             if (is_null($arguments)) {
@@ -720,6 +757,7 @@ abstract class Base
         } catch (Exception $e) {
             self::displayError(clone $this->view, $e, 'systemerror.tpl');
         }
+        $this->view->setClonePaths(false);
     }
 
     private static function displayError($view, $exception, $template, $class = '')
@@ -840,6 +878,8 @@ abstract class Base
         $cache_dir = $this->cnf('global:cache_dir');
         if (empty($cache_dir)) {
             $cache_dir = false;
+        } elseif (php_sapi_name() === 'cli') {
+            $cache_dir .= '/'.posix_getpwuid(posix_geteuid())['name'];
         }
 
         $paths = [dirname(__DIR__) . '/' . View::TEMPLATE_DIR_NAME];
@@ -870,7 +910,14 @@ abstract class Base
                     ? $class::extendTemplateNamespace()
                     : strtolower(str_replace('\\', '_', $plugin));
                 $plugin_templates[] = "@$namespace";
-                $view->prependPath($class::extendTemplateDir(), $namespace);
+                $paths = $class::extendTemplateDir($this);
+                // backward compatibility
+                if (!is_array($paths)) {
+                    $paths = [$paths];
+                }
+                foreach ($paths as $path) {
+                    $view->prependPath($path, $namespace);
+                }
             }
         }
         $view->bind('plugin_templates', $plugin_templates);
@@ -879,6 +926,8 @@ abstract class Base
         if (file_exists($current_dir)) {
             $view->prependPath($current_dir);
         }
+
+        $view->setLogger($this->logger);
 
         return $view;
     }
@@ -944,7 +993,8 @@ abstract class Base
                 if (!empty($caller)) {
                     $inst->setCaller($caller);
                 }
-                $result[$plugin] = call_user_func_array([$inst, $function], $arguments);
+                //$result[$plugin] = call_user_func_array([$inst, $function], $arguments);
+                $result[$plugin] = $inst->$function(...$arguments);
             }
         }
 
@@ -975,6 +1025,10 @@ abstract class Base
             $url = preg_replace('/\?.*$/', '', $url);
         }
 
+        if ($this->request->isset('logout')) {
+            $url = $this->cnf('global:redirect_on_logout') ?? '.';
+        }
+
         if ((int)DEBUG_MODE === 2) {
             return $url;
         }
@@ -1001,4 +1055,42 @@ abstract class Base
     //    }
     //    return [$className, $namespace];
     //}
+
+    public function syslog(string $format, array $context = [], int $level = 0): void
+    {
+        // Localize log message
+        if (defined('LOG_LOCALIZE') && LOG_LOCALIZE === 1) {
+            $format = Lang::translate($format, null, null, true);
+        }
+
+        array_unshift($context, $format);
+        $message = call_user_func_array('sprintf', $context);
+
+        $this->logger->log($message, $level);
+    }
+
+    public static function urlMapping(string $format): string
+    {
+        if (defined('URL_MAPPING')) {
+            $url = parse_url($format);
+            $query = $url['query'] ?? '';
+            $decode = urldecode($query);
+            $basename = basename($url['path'] ?? '');
+            if (isset(URL_MAPPING[$query])) {
+                $format = URL_MAPPING[$query];
+            } elseif (isset(URL_MAPPING[$decode])) {
+                $format = URL_MAPPING[$decode];
+            } elseif (isset(URL_MAPPING[$url['path'] ?? ''])) {
+                $format = URL_MAPPING[$url['path']];
+            } elseif (isset(URL_MAPPING[$format])) {
+                $format = URL_MAPPING[$format];
+            } elseif (in_array($url['path'], URL_MAPPING)) {
+                $format = $url['path'];
+            } elseif (in_array($basename, URL_MAPPING)) {
+                $format = $basename;
+            }
+        }
+
+        return $format;
+    }
 }

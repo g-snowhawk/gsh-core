@@ -214,7 +214,12 @@ class Response extends \Gsnowhawk\System
 
     public function accessLog()
     {
-        self::echoLog(dirname(ERROR_LOG_DESTINATION).'/access.log');
+        $logfile = $this->cnf('global:log_file_name') ?? 'access.log';
+        if (empty($logfile)) {
+            throw new ErrorException('Logfile name is empty', 0, E_USER_ERROR, __FILE__, __LINE__);
+        }
+
+        self::echoLog(dirname(ERROR_LOG_DESTINATION).'/'.$logfile);
     }
 
     public function printFrame()

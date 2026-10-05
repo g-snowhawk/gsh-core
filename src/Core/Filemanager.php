@@ -106,6 +106,10 @@ class Filemanager extends User
 
     protected function explorer($id_prefix = '')
     {
+        if ($this->request->isset('cd')) {
+            $this->setCurrentDirectory($this->request->param('cd'));
+        }
+
         $cwd = $this->currentDirectory(true);
         $files = $this->fileList(basename($cwd), dirname($cwd));
         $this->view->bind('files', $files);
@@ -139,6 +143,7 @@ class Filemanager extends User
         } elseif (is_dir($file)) {
             return false;
         }
+
         $file_name = basename($file);
         $urlencoded = rawurlencode($file_name);
         $content_length = filesize($file);
@@ -148,6 +153,9 @@ class Filemanager extends User
         Http::responseHeader('Content-length', "$content_length");
         Http::responseHeader('Content-type', "$mime");
         readfile($file);
+        if ($this->app->logger) {
+            $this->app->logger->syslog('Download %s', [$path]);
+        }
         exit;
     }
 
@@ -241,7 +249,7 @@ class Filemanager extends User
         }
     }
 
-    protected function setCurrentDirectory($path, $redirect = false): void
+    protected function setCurrentDirectory($path, $redirect_is = false): void
     {
         $permission = $this->currentApp('basename') . '.file.noroot';
         if (empty($path) && !$this->isAdmin() && $this->hasPermission($permission)) {
@@ -259,10 +267,14 @@ class Filemanager extends User
                 }
             }
         }
+
         $this->session->param('current_dir', ltrim($path ?? '', '/'));
+
         // Reload file explorer
-        if ($redirect) {
-            Http::redirect(sprintf('%s?mode=%s', $this->app->systemURI(), $this->response));
+        if ($redirect_is) {
+            $this->app->syslog('Change directory %s', [$this->session->param('current_dir')]);
+            $redirect = static::urlMapping(sprintf('?mode=%s', $this->response));
+            Http::redirect($this->app->systemURI().$redirect);
         }
     }
 
@@ -334,7 +346,7 @@ class Filemanager extends User
         $message = 'SUCCESS_REMOVED';
         $status = 0;
         $options = [];
-        $response = [[$this, 'redirect'], $this->response];
+        $response = [[$this, 'redirect'], $this->response.'&cd=%s', 'redirect', [$this->currentDirectory(true)]];
 
         if (!self::_remove()) {
             $message = 'FAILED_REMOVE';
@@ -347,19 +359,32 @@ class Filemanager extends User
         $this->postReceived(Lang::translate($message), $status, $response, $options);
     }
 
-    private function _remove()
+    private function _remove(): bool
     {
         list($kind, $path) = explode(':', $this->request->param('delete'));
         $path = $this->currentDirectory().'/'.ltrim($path, '/');
         if (!file_exists($path)) {
             return true;
         }
+
+        $return = false;
+
         switch ($kind) {
             case 'file':
-                return unlink($path);
+                if (@unlink($path)) {
+                    $this->app->syslog('Remove file %s', [basename($path)]);
+                    $return = true;
+                }
+                break;
             case 'folder':
-                return File::rmdir($path, true);
+                if (File::rmdir($path, true)) {
+                    $this->app->syslog('Remove directory %s', [basename($path)]);
+                    $return = true;
+                }
+                break;
         }
+
+        return $return;
     }
 
     protected function rename()
@@ -452,6 +477,11 @@ class Filemanager extends User
             if (false === mkdir($directory, 0777, true)) {
                 throw new ErrorException('Make directory error');
             }
+
+            $cd = str_replace($this->rootdir.'/', '', $directory);
+            $this->setCurrentDirectory($cd);
+            $response = [[$this, 'redirect'], $this->response.'&cd=%s', 'redirect', [$cd]];
+            $this->app->syslog('Create directory %s', [$cd]);
         } catch (ErrorException $e) {
             $message = 'FAILED_SAVE';
             $status = 1;
@@ -498,6 +528,8 @@ class Filemanager extends User
             if (false === move_uploaded_file($source, $dest)) {
                 throw new ErrorException('File upload error');
             }
+
+            $this->app->syslog('Create file %s', [$file_name]);
         } catch (ErrorException $e) {
             $message = 'FAILED_SAVE';
             $status = 1;

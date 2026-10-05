@@ -29,13 +29,16 @@ class Receive extends Response
     {
         if (parent::save()) {
             $this->session->param('messages', Lang::translate('SUCCESS_SAVED'));
-            $url = $this->app->systemURI().'?mode=user.response';
+
+            $query = '?mode=user.response';
             if ($this->request->param('profile') === '1') {
-                $url .= ':profile';
+                $query .= ':profile';
             } elseif (!empty($this->session->param('reissued_password'))) {
-                $url .= ':reissued';
+                $query .= ':reissued';
             }
-            Http::redirect($url);
+
+            $redirect = $this->urlMapping($query);
+            Http::redirect($this->app->systemURI().$redirect);
         }
         $this->edit();
     }
@@ -48,7 +51,8 @@ class Receive extends Response
         if (parent::remove()) {
             $this->session->param('messages', Lang::translate('SUCCESS_REMOVED'));
         }
-        Http::redirect($this->app->systemURI().'?mode=user.response');
+        $redirect = $this->urlMapping('?mode=user.response');
+        Http::redirect($this->app->systemURI().$redirect);
     }
 
     /**
@@ -71,13 +75,6 @@ class Receive extends Response
         }
 
         $this->postReceived(Lang::translate($message), $status, $response, $options);
-
-        //if (parent::saveAlias()) {
-        //    $this->session->param('messages', Lang::translate('SUCCESS_SAVED'));
-        //    $url = $this->app->systemURI().'?mode=user.response:profile';
-        //    Http::redirect($url);
-        //}
-        //$this->edit();
     }
 
     public function reissuedMail()

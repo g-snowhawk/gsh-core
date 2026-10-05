@@ -388,7 +388,7 @@ class Setup
                                     $contents .= "$key = \"$value\"".PHP_EOL;
                                 }
                             }
-                            if (file_put_contents($this->config, implode('', ['<', '?php', PHP_EOL, $contents]))) {
+                            if (file_put_contents($this->config, $contents)) {
                                 $tmp_file = $this->request->POST('tmp_file');
                                 if (@unlink($tmp_file)) {
                                     $this->session->destroy();
@@ -421,7 +421,6 @@ class Setup
                     }
                 }
                 $tmp_file = $this->request->POST('tmp_file');
-                $contents = implode('', ['<', '?php', PHP_EOL, $contents]);
                 $filename = basename($this->config);
                 $content_length = strlen($contents);
                 Http::responseHeader("Content-Disposition: attachment; filename=\"$filename\"");
