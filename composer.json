@@ -20,7 +20,7 @@
         "tecnickcom/tcpdf": "^6.3",
         "twig/twig": "^3.26",
         "cebe/markdown": "*",
-        "g-snowhawk/gsh-framework": "1.0.*"
+        "g-snowhawk/gsh-framework": "^1.1"
     },
     "autoload": {
         "psr-4": {
