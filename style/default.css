@@ -128,6 +128,10 @@ button.unveil-password {
 button.unveil-password:hover {
   color: #36c;
 }
+#subform button.unveil-password {
+  margin-top: 0.5em;
+  padding: 0;
+}
 
 /**
  * Textbox style
@@ -1820,6 +1824,37 @@ html.filemanager .explorer-list .footer-controls #file-selector label input {
   background-color: #dfdfdf;
 }
 #user-edit #update-password .fieldset input:is([type=password],[type=text]):disabled::placeholder {
+  color: transparent;
+}
+
+#user-edit #subform #update-password .fieldset:has(input:is([type=password],[type=text]).ok) label,
+#user-edit #subform #update-password .fieldset:has(input:is([type=password],[type=text]).ng) label,
+#user-edit #subform #update-password .fieldset:has(input:is([type=password],[type=text]).bad) label,
+#user-edit #subform #update-password .fieldset:has(input:is([type=password],[type=text]):disabled) label {
+  background-color: transparent;
+}
+
+#user-alias_edit #update-password .fieldset .input,
+#user-alias_edit #update-password .fieldset input:is([type=password],[type=text]) {
+  max-width: 200px;
+}
+#user-alias_edit #update-password .fieldset input:is([type=password],[type=text]).ok,
+#user-alias_edit #update-password .fieldset:has(input:is([type=password],[type=text]).ok) label {
+  background-color: #cfc;
+}
+#user-alias_edit #update-password .fieldset input:is([type=password],[type=text]).ng,
+#user-alias_edit #update-password .fieldset:has(input:is([type=password],[type=text]).ng) label {
+  background-color: #ffc;
+}
+#user-alias_edit #update-password .fieldset input:is([type=password],[type=text]).bad,
+#user-alias_edit #update-password .fieldset:has(input:is([type=password],[type=text]).bad) label {
+  background-color: #fcc;
+}
+#user-alias_edit #update-password .fieldset input:is([type=password],[type=text]):disabled,
+#user-alias_edit #update-password .fieldset:has(input:is([type=password],[type=text]):disabled) label {
+  background-color: #dfdfdf;
+}
+#user-alias_edit #update-password .fieldset input:is([type=password],[type=text]):disabled::placeholder {
   color: transparent;
 }
 
