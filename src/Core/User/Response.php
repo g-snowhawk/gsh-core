@@ -269,6 +269,10 @@ class Response extends Unauth
         $form['confirm'] = Lang::translate('CONFIRM_SAVE_DATA');
         $this->view->bind('form', $form);
 
+        if (defined('PASSWORD_POLICY')) {
+            $this->view->bind('password_policy', PASSWORD_POLICY);
+        }
+
         parent::defaultView('user-alias_edit');
     }
 
@@ -293,6 +297,10 @@ class Response extends Unauth
             );
         }
         $this->view->bind('post', $post);
+
+        if (defined('PASSWORD_POLICY')) {
+            $this->view->bind('password_policy', PASSWORD_POLICY);
+        }
 
         $plugins = $this->app->execPlugin('beforeRendering', 'alias-edit-subform');
         $response = $this->view->render('user/alias_edit_subform.tpl', true);

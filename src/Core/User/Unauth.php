@@ -25,7 +25,7 @@ class Unauth extends \Gsnowhawk\User implements \Gsnowhawk\Unauth
             __CLASS__,
             array_diff(
                 get_class_methods(__CLASS__),
-                get_class_methods(get_parent_class()),
+                get_class_methods(get_parent_class(__CLASS__)),
                 [__FUNCTION__]
             )
         ];

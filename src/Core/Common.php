@@ -282,7 +282,7 @@ abstract class Common
     {
         $nav = [];
         $install_log = $this->app->cnf('global:log_dir') . '/install.log';
-        $userkey = $this->getUserID($this->db);
+        $userkey = (!is_null($this->db)) ? $this->getUserID($this->db) : null;
 
         if (file_exists($install_log)) {
             $tmp = file($install_log);
@@ -501,42 +501,53 @@ abstract class Common
     protected function redirect($mode, string $type = 'redirect', ?array $args = null)
     {
         if ($type === 'redirect') {
-            $u = (
-                filter_var($mode, FILTER_VALIDATE_URL)
-                || filter_var("http://localhost{$mode}", FILTER_VALIDATE_URL)
-                || preg_match('/\?.+$/', $mode)
-            ) ? parse_url($mode) : parse_url(sprintf('?mode=%s', $mode));
-            $str = (!empty($u['scheme'])) ? $u['scheme'].'://' : '';
-            if (!empty($u['user'])) {
-                $str .= $u['user'];
-                if (!empty($u['pass'])) {
-                    $str .= ':'.$u['pass'];
+            if (defined('URL_MAPPING')) {
+                $u = (
+                    filter_var($mode, FILTER_VALIDATE_URL)
+                    || filter_var("http://localhost{$mode}", FILTER_VALIDATE_URL)
+                    || preg_match('/\?.+$/', $mode)
+                ) ? parse_url($mode) : parse_url(sprintf('?mode=%s', $mode));
+                $str = (!empty($u['scheme'])) ? $u['scheme'].'://' : '';
+                if (!empty($u['user'])) {
+                    $str .= $u['user'];
+                    if (!empty($u['pass'])) {
+                        $str .= ':'.$u['pass'];
+                    }
+                    $str .= '@';
                 }
-                $str .= '@';
-            }
-            $str .= $u['host'] ?? '';
-            $str .= (!empty($u['port'])) ? ':'.$u['port'] : '';
-            $str .= $u['path'] ?? '';
-            if (!empty($u['query'])) {
-                $str .= '?';
-                parse_str($u['query'], $params);
-                foreach ($params as $k => $v) {
-                    $str .= $k.'='.preg_replace('/%25([ds])/', '%$1', urlencode($v));
+                $str .= $u['host'] ?? '';
+                $str .= (!empty($u['port'])) ? ':'.$u['port'] : '';
+                $str .= $u['path'] ?? '';
+                if (!empty($u['query'])) {
+                    $str .= '?';
+                    parse_str($u['query'], $params);
+                    foreach ($params as $k => $v) {
+                        $str .= $k.'='.preg_replace('/%25([ds])/', '%$1', urlencode($v));
+                    }
                 }
-            }
-            $str .= (!empty($u['fragment'])) ? '#'.$u['fragment'] : '';
+                $str .= (!empty($u['fragment'])) ? '#'.$u['fragment'] : '';
 
-            $redirect = static::urlMapping($str);
-            if (isset($args)) {
-                array_unshift($args, $redirect);
-                $redirect = call_user_func_array('sprintf', $args);
-            }
+                $redirect = static::urlMapping($str);
+                if (isset($args)) {
+                    array_unshift($args, $redirect);
+                    $redirect = call_user_func_array('sprintf', $args);
+                }
 
-            if (filter_var($mode, FILTER_VALIDATE_URL)) {
-                $url = $redirect;
+                if (filter_var($mode, FILTER_VALIDATE_URL)) {
+                    $url = $redirect;
+                } else {
+                    $sysurl = $this->app->systemURI();
+                    $url = $sysurl.str_replace($sysurl, '', $redirect);
+                }
             } else {
-                $sysurl = $this->app->systemURI();
-                $url = $sysurl.str_replace($sysurl, '', $redirect);
+                $mode = preg_replace_callback(
+                    '/%5C(%[0-9A-F]{2})/',
+                    function ($match) {
+                        return urldecode($match[1]);
+                    },
+                    filter_var($mode, FILTER_SANITIZE_ENCODED, FILTER_FLAG_STRIP_HIGH)
+                );
+                $url = $this->app->systemURI()."?mode=$mode";
             }
         } else {
             $url = static::urlMapping($mode);

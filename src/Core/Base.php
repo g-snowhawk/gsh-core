@@ -678,7 +678,7 @@ abstract class Base
         if (!$mode || !preg_match("/^([0-9a-z_\-]+[~#])?[0-9a-z\._\-]+(:[0-9a-z_\-]+)?(\(.*\))?$/i", $mode ?? '')) {
             // Load user preferences
             $uname = $this->session->param('uname');
-            if (!empty($uname)) {
+            if (!empty($uname) && $uname !== self::GUESTNAME) {
                 $id = $this->db->get('id', 'user', 'uname = ?', [$uname]);
                 $this->mergeConfiguration($id);
             }

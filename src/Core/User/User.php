@@ -555,6 +555,10 @@ class User extends Common
 
     private function privilege($userkey, $key, $filter1 = 0, $filter2 = 0)
     {
+        if (is_null($this->db)) {
+            return false;
+        }
+
         if (is_null($filter1)) {
             $filter1 = 0;
         }

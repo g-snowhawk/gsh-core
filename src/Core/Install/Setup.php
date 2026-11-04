@@ -62,7 +62,7 @@ class Setup
     /**
      * Object Constructor.
      */
-    public function __construct(Form $request = null)
+    public function __construct(?Form $request = null)
     {
         $templates_dir = __DIR__ . '/../../templates';
 
