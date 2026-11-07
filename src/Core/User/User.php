@@ -696,9 +696,7 @@ class User extends Common
 
             $parent = $this->request->param('real_id');
             if (!empty($parent)) {
-                $parent_rgt = $this->db->get('rgt', 'user', 'id = ?', [$parent]);
-                $save['lft'] = $parent_rgt;
-                $save['rgt'] = $parent_rgt + 1;
+                $save['alias'] = $parent;
             }
 
             $raw = ['create_date' => 'CURRENT_TIMESTAMP'];
