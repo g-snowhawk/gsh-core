@@ -108,6 +108,8 @@ class Filemanager extends User
     {
         if ($this->request->isset('cd')) {
             $this->setCurrentDirectory($this->request->param('cd'));
+        } else {
+            $this->setCurrentDirectory(null);
         }
 
         $cwd = $this->currentDirectory(true);
@@ -346,7 +348,8 @@ class Filemanager extends User
         $message = 'SUCCESS_REMOVED';
         $status = 0;
         $options = [];
-        $response = [[$this, 'redirect'], $this->response.'&cd=%s', 'redirect', [$this->currentDirectory(true)]];
+        $current_dir = $this->currentDirectory(true);
+        $response = [[$this, 'redirect'], $this->response.'&cd=%s', 'redirect', [$current_dir]];
 
         if (!self::_remove()) {
             $message = 'FAILED_REMOVE';

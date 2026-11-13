@@ -328,6 +328,7 @@ abstract class Common
             'global' => [
                 'enable_user_alias' => $this->app->cnf('global:enable_user_alias'),
                 'assets_path' => $this->app->cnf('global:assets_path'),
+                'system_path' => $this->app->cnf('global:system_path'),
             ]
         ];
         $this->view->bind('config', $config);
@@ -467,7 +468,8 @@ abstract class Common
                 $result['arguments'] = $arguments;
             }
 
-            $ret = call_user_func_array($response[0], (array)$response[1]);
+            $func = array_shift($response);
+            $ret = call_user_func_array($func, (array)$response);
             $result['response'] = (is_array($ret)) ? $ret : ['type' => 'replace', 'source' => $ret];
 
             $callback = $this->request->param('callback');
@@ -495,7 +497,8 @@ abstract class Common
         if ($status === 0) {
             $this->setMessages($message);
         }
-        call_user_func_array($response[0], (array)$response[1]);
+        $func = array_shift($response);
+        call_user_func_array($func, (array)$response);
     }
 
     protected function redirect($mode, string $type = 'redirect', ?array $args = null)
@@ -519,11 +522,12 @@ abstract class Common
                 $str .= (!empty($u['port'])) ? ':'.$u['port'] : '';
                 $str .= $u['path'] ?? '';
                 if (!empty($u['query'])) {
-                    $str .= '?';
                     parse_str($u['query'], $params);
+                    $parts = [];
                     foreach ($params as $k => $v) {
-                        $str .= $k.'='.preg_replace('/%25([ds])/', '%$1', urlencode($v));
+                        $parts[] = $k.'='.preg_replace('/%25([ds])/', '%$1', urlencode($v));
                     }
+                    $str .= '?'.implode('&', $parts);
                 }
                 $str .= (!empty($u['fragment'])) ? '#'.$u['fragment'] : '';
 

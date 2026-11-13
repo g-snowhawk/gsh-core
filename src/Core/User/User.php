@@ -88,7 +88,16 @@ class User extends Common
         if (!empty($userinfo = $this->db->get('*', 'user', 'uname = ?', [$uname]))) {
             $this->uid = $userinfo['id'];
             $fields = $this->db->getFields('user', true);
+
+            // Set alias info
             $userinfo['alias_name'] = $this->session->param('alias');
+            if (!empty($userinfo['alias'])) {
+                $admin = $this->db->get('admin', 'user', 'id = ?', [$userinfo['alias']]);
+                if (!empty($admin)) {
+                    $userinfo['admin'] = $admin;
+                }
+            }
+
             foreach ($userinfo as $key => $value) {
                 if (is_null($value)) {
                     continue;

@@ -1073,19 +1073,23 @@ abstract class Base
     {
         if (defined('URL_MAPPING')) {
             $url = parse_url($format);
-            $query = $url['query'] ?? '';
+            $path = $url['path'] ?? '';
+            $query = str_replace('mode=', '', $url['query'] ?? '');
             $decode = urldecode($query);
-            $basename = basename($url['path'] ?? '');
+            $alternatively = ($path === $format && empty($qurey)) ? 'mode='.$format : '';
+            $basename = basename($path);
             if (isset(URL_MAPPING[$query])) {
                 $format = URL_MAPPING[$query];
             } elseif (isset(URL_MAPPING[$decode])) {
                 $format = URL_MAPPING[$decode];
-            } elseif (isset(URL_MAPPING[$url['path'] ?? ''])) {
-                $format = URL_MAPPING[$url['path']];
+            } elseif (isset(URL_MAPPING[$path])) {
+                $format = URL_MAPPING[$path];
             } elseif (isset(URL_MAPPING[$format])) {
                 $format = URL_MAPPING[$format];
-            } elseif (in_array($url['path'], URL_MAPPING)) {
-                $format = $url['path'];
+            } elseif (isset(URL_MAPPING[$alternatively])) {
+                $format = URL_MAPPING[$alternatively];
+            } elseif (in_array($path, URL_MAPPING)) {
+                $format = $path;
             } elseif (in_array($basename, URL_MAPPING)) {
                 $format = $basename;
             }
