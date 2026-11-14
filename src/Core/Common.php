@@ -549,8 +549,15 @@ abstract class Common
                     function ($match) {
                         return urldecode($match[1]);
                     },
-                    filter_var($mode, FILTER_SANITIZE_ENCODED, FILTER_FLAG_STRIP_HIGH)
+                    $mode
                 );
+                if (isset($args)) {
+                    array_walk($args, function (&$item, $key) {
+                        $item = urlencode($item);
+                    });
+                    array_unshift($args, $mode);
+                    $mode = call_user_func_array('sprintf', $args);
+                }
                 $url = $this->app->systemURI()."?mode=$mode";
             }
         } else {

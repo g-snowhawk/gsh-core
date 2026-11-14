@@ -10,7 +10,7 @@
     {% if loop.first %}
       <ul>
     {% endif %}
-    <li><a href="?mode={{ appname }}.filemanager.receive:set-directory&amp;path={{ folder.path|url_encode }}" class="drop-target{% if (folder.parent is empty ? '' : folder.parent ~ '/') ~ folder.path == session.current_dir %} current{% endif %}" data-drop-path="{{ folder.path|url_encode }}">{{ aliases[folder.name] ?? folder.name }}</a>
+    <li><a href="?mode={{ appname }}.filemanager.receive:set-directory&amp;path={{ folder.path|url_encode }}" class="drop-target{% if folder.path == session.current_dir %} current{% endif %}" data-drop-path="{{ folder.path|url_encode }}">{{ aliases[folder.name] ?? folder.name }}</a>
     {% if folder.name is not null %}
       {% if filemanager_tree_depth is not defined or level < filemanager_tree_depth - 1 %}
         {{ self.recursion(folder.name, folder.parent, appname, level + 1) }}
