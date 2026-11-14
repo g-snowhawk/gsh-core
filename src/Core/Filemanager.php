@@ -109,7 +109,7 @@ class Filemanager extends User
         if ($this->request->isset('cd')) {
             $this->setCurrentDirectory($this->request->param('cd'));
         } else {
-            $this->setCurrentDirectory(null);
+            $this->setCurrentDirectory($this->session->param('current_dir'));
         }
 
         $cwd = $this->currentDirectory(true);
@@ -232,6 +232,12 @@ class Filemanager extends User
 
                 if (!empty($this->baseurl) && !is_dir($path)) {
                     $data['url'] = rtrim($this->baseurl, '/') . str_replace(realpath($this->rootdir), '', $path);
+
+                    if (DEBUG_MODE === 1 && defined('DEVELOPMENT_BASEURL')) {
+                        $str = preg_replace('/^https?:\/\/[^\/]+/', DEVELOPMENT_BASEURL, $data['url']);
+                        $data['url'] = $str;
+                    }
+
                     $data['uri'] = [
                         'dirname' => dirname($data['url']),
                         'basename' => basename($data['url']),
@@ -270,7 +276,7 @@ class Filemanager extends User
             }
         }
 
-        $this->session->param('current_dir', ltrim($path ?? '', '/'));
+        $this->session->param('current_dir', trim(urldecode($path ?? ''), '/'));
 
         // Reload file explorer
         if ($redirect_is) {
