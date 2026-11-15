@@ -799,4 +799,13 @@ abstract class Common
     {
         return Base::urlMapping($format);
     }
+
+    public function urlForDeveloper($url): string
+    {
+        if (DEBUG_MODE === 1 && defined('DEVELOPMENT_BASEURL')) {
+            $url = preg_replace('/^https?:\/\/[^\/]+/', DEVELOPMENT_BASEURL, $url);
+        }
+
+        return $url;
+    }
 }

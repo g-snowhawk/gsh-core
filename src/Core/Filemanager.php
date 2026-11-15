@@ -232,11 +232,7 @@ class Filemanager extends User
 
                 if (!empty($this->baseurl) && !is_dir($path)) {
                     $data['url'] = rtrim($this->baseurl, '/') . str_replace(realpath($this->rootdir), '', $path);
-
-                    if (DEBUG_MODE === 1 && defined('DEVELOPMENT_BASEURL')) {
-                        $str = preg_replace('/^https?:\/\/[^\/]+/', DEVELOPMENT_BASEURL, $data['url']);
-                        $data['url'] = $str;
-                    }
+                    $data['url'] = parent::urlForDeveloper($data['url']);
 
                     $data['uri'] = [
                         'dirname' => dirname($data['url']),
