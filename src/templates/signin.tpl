@@ -26,6 +26,11 @@
       <p>認証に失敗しました</p>
     </div>
 {% endif %}
+{% if err.vl_disconnected == 1 %}
+    <div class="err">
+      <p>セッションが切れました</p>
+    </div>
+{% endif %}
     <div class="form-footer">
       <script src="{{ config.global.assets_path }}script/signin.js" charset="utf-8"></script>
       <noscript>
