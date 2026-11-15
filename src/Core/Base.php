@@ -323,7 +323,7 @@ abstract class Base
         $upass = $this->request->POST('upass');
         $ukeep = $this->request->POST('ukeep');
 
-        $err = ['vl_empty' => 0, 'vl_mismatch' => 0, 'vl_nocookie' => 0];
+        $err = ['vl_empty' => 0, 'vl_mismatch' => 0, 'vl_nocookie' => 0, 'vl_disconnected' => 0];
 
         $secret = '';
         $columns = (is_null($this->db)) ? [] : $this->db->getFields($authTable, false, false, "like 'pw_%'");
@@ -398,6 +398,11 @@ abstract class Base
 
             $header = ['id' => 'signin', 'title' => Lang::translate('TITLE_SIGNIN')];
             $this->view->bind('header', $header);
+
+            if (Env::cookie('vl_disconnected') === 'Session was disconnected') {
+                $err['vl_disconnected'] = 1;
+                setcookie('vl_disconnected', '');
+            }
 
             $this->view->bind('err', $err);
             $this->view->bind('stub', $this->csrf());
@@ -556,7 +561,14 @@ abstract class Base
         $package = $unit['namespace'] . '\\' . $unit['package'];
         if (!class_exists($package)) {
             if (!empty($_SESSION['authorized'])) {
-                throw new ErrorException("Class `{$package}' is not found");
+                $message = "Class `{$package}' is not found";
+                if (DEBUG_MODE !== 0) {
+                    throw new ErrorException($message);
+                }
+                setcookie('vl_disconnected', 'Session was disconnected');
+                header('Location: ?logout');
+                trigger_error($message, E_USER_NOTICE);
+                exit;
             }
             $unit = self::parseMode(self::DEFAULT_RESPONSE);
             $unit['namespace'] = __NAMESPACE__;
