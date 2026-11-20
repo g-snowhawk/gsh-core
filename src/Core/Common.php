@@ -469,7 +469,8 @@ abstract class Common
             }
 
             $func = array_shift($response);
-            $ret = call_user_func_array($func, (array)$response);
+            $args = (count($response) === 1 && is_array(reset($response))) ? array_shift($response) : $response;
+            $ret = call_user_func_array($func, $args);
             $result['response'] = (is_array($ret)) ? $ret : ['type' => 'replace', 'source' => $ret];
 
             $callback = $this->request->param('callback');
@@ -498,7 +499,8 @@ abstract class Common
             $this->setMessages($message);
         }
         $func = array_shift($response);
-        call_user_func_array($func, (array)$response);
+        $args = (count($response) === 1 && is_array(reset($response))) ? array_shift($response) : $response;
+        call_user_func_array($func, $args);
     }
 
     protected function redirect($mode, string $type = 'redirect', ?array $args = null)
