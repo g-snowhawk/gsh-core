@@ -242,7 +242,7 @@ function validatePasswordValidation(event) {
 
     if (event.type === 'paste') {
         const pastedText = event.clipboardData.getData('text');
-        if (pastedText.length > input.maxLength) {
+        if (input.maxLength > 0 && pastedText.length > input.maxLength) {
             invalid = true;
             validity = 'Too long'.translate();
         }
